@@ -8,20 +8,20 @@ import java.util.HashMap;
 /**
  * A JsonObject represents some data from a JSON response. You can query
  * the type of data and access its value(s) using the functions in this class.
- * 
- * This library is free software; you can redistribute it and/or
+ *
+ * <p>This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public 
- * License as published by the Free Software Foundation, version 3.
+ * License as published by the Free Software Foundation, version 3.</p>
  * 
- * This library is distributed in the hope that it will be useful,
+ * <p>This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * Lesser General Public License for more details.</p>
  * 
- * You should have received a copy of the GNU Lesser General
+ * <p>You should have received a copy of the GNU Lesser General
  * Public License along with this library; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
- * Boston, MA  02111-1307  USA
+ * Boston, MA  02111-1307  USA</p>
  *
  * @author Francis Li <mail@francisli.com>
  */
@@ -46,6 +46,7 @@ public class JSONObject {
         this.object = object;
     }     
     
+    /** Returns the textual representation of this JSON object. */
     public String toString() {
         if (object == null) {
             return "null";

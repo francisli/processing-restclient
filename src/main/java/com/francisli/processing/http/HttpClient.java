@@ -16,26 +16,28 @@ import processing.core.*;
  * of HTTP requests against a particular server. Instantiate a new HttpClient
  * object for each server you wish to communicate with.
  * 
- * Requests are performed in the background and responses are returned in a
- * callback function with the following signature:
+ * <p>Requests are performed in the background and responses are returned in a
+ * callback function with the following signature:</p>
  * 
+ * <pre>
  * void responseReceived(HttpRequest request, HttpResponse response) {
  * 
  * }
+ * </pre>
  *
- * This library is free software; you can redistribute it and/or
+ * <p>This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public 
- * License as published by the Free Software Foundation, version 3.
+ * License as published by the Free Software Foundation, version 3.</p>
  * 
- * This library is distributed in the hope that it will be useful,
+ * <p>This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * Lesser General Public License for more details.</p>
  * 
- * You should have received a copy of the GNU Lesser General
+ * <p>You should have received a copy of the GNU Lesser General
  * Public License along with this library; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
- * Boston, MA  02111-1307  USA
+ * Boston, MA  02111-1307  USA</p>
  * 
  * @author Francis Li <mail@francisli.com>
  */
@@ -54,6 +56,14 @@ public class HttpClient {
     /** Set to false if you want to turn off logging information in the console. */
     public boolean logging;
     
+    /** Returns a new HttpClient instance that connects to the specified 
+     * host and ports.
+     * 
+     * @param parent PApplet of the sketch (typically use "this")
+     * @param hostname The domain name or IP address of the host
+     * @param port The port to connect to for unsecured connections (typically 80)
+     * @param securePort The port to connect to for secure connections (typically 443)
+     */
     public HttpClient(PApplet parent, String hostname, int port, int securePort) {
         this.parent = parent;
         parent.registerDispose(this);
@@ -68,10 +78,23 @@ public class HttpClient {
         logging = true;
     }
     
+    /** Returns a new HttpClient instance that connects to the specified 
+     * host and port.  The default secure SSL port is assumed.
+     * 
+     * @param parent PApplet of the sketch (typically use "this")
+     * @param hostname The domain name or IP address of the host
+     * @param port The port to connect to for unsecured connections (typically 80)
+     */
     public HttpClient(PApplet parent, String hostname, int port) {
         this(parent, hostname, port, 443);
     }
     
+    /** Returns a new HttpClient instance that connects to the specified 
+     * host on default ports.
+     * 
+     * @param parent PApplet of the sketch (typically use "this")
+     * @param hostname The domain name or IP address of the host
+     */
     public HttpClient(PApplet parent, String hostname) {
         this(parent, hostname, 80, 443);
     }
