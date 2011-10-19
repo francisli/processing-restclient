@@ -132,6 +132,15 @@ public class HttpClient {
         return GET(path, null);
     }
     
+    /** 
+     * Performs a GET request to fetch content from the specified path with
+     * the specified parameters. The parameters are assembled into a query
+     * string and appended to the path.
+     * 
+     * @param path An absolute path to file or script on the server
+     * @param params A collection of parameters to pass as a query string with the path
+     * @return HttpRequest object representing this request
+     */
     public HttpRequest GET(String path, Map params) {
         //// clean up path a little bit- remove whitespace, add slash prefix
         path = path.trim();
