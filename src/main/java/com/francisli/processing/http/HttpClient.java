@@ -1,15 +1,43 @@
 package com.francisli.processing.http;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import org.apache.http.HttpHost;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import processing.core.*;
 
-/**
+/** 
+ * The HttpClient class provides the interface for performing different types
+ * of HTTP requests against a particular server. Instantiate a new HttpClient
+ * object for each server you wish to communicate with.
+ * 
+ * Requests are performed in the background and responses are returned in a
+ * callback function with the following signature:
+ * 
+ * void responseReceived(HttpRequest request, HttpResponse response) {
+ * 
+ * }
  *
- * @author francisli
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public 
+ * License as published by the Free Software Foundation, version 3.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General
+ * Public License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA  02111-1307  USA
+ * 
+ * @author Francis Li <mail@francisli.com>
  */
 public class HttpClient {
    
@@ -21,13 +49,15 @@ public class HttpClient {
     
     HttpHost host, secureHost;
     
+    /** Set to true if you want the next request to use SSL encryption. */
     public boolean useSSL;
+    /** Set to false if you want to turn off logging information in the console. */
     public boolean logging;
     
     public HttpClient(PApplet parent, String hostname, int port, int securePort) {
         this.parent = parent;
         parent.registerDispose(this);
-        parent.registerDraw(this);
+        parent.registerPre(this);
         try {
             callbackMethod = parent.getClass().getMethod("responseReceived", new Class[] { HttpRequest.class, HttpResponse.class });
         } catch (Exception e) {
@@ -50,7 +80,7 @@ public class HttpClient {
         httpClient.getConnectionManager().shutdown();
     }
     
-    public void draw() {
+    public void pre() {
         HashMap<HttpRequest, HttpResponse> requestMapClone;
         synchronized(this) {
             requestMapClone = (HashMap<HttpRequest, HttpResponse>)requestMap.clone();
@@ -63,17 +93,44 @@ public class HttpClient {
                     requestMap.remove(request);
                 }
             } catch (Exception e) {
+                callbackMethod = null;
                 throw new RuntimeException(e);
             }
         }
     }
         
-    public HttpRequest GET(String file) {
-        file = file.trim();
-        if (!file.startsWith("/")) {
-            file = "/" + file;
+    /** 
+     * Performs a GET request to fetch content from the specified path.
+     * 
+     * @param path An absolute path to file or script on the server
+     * @return HttpRequest object representing this request
+     */
+    public HttpRequest GET(String path) {
+        return GET(path, null);
+    }
+    
+    public HttpRequest GET(String path, Map params) {
+        //// clean up path a little bit- remove whitespace, add slash prefix
+        path = path.trim();
+        if (!path.startsWith("/")) {
+            path = "/" + path;
         }
-        HttpGet get = new HttpGet(file);
+        //// if params passed, format into a query string and append
+        if (params != null) {
+            ArrayList<BasicNameValuePair> pairs = new ArrayList<BasicNameValuePair>();
+            for (Object key: params.keySet()) {
+                Object value = params.get(key);
+                pairs.add(new BasicNameValuePair(key.toString(), value.toString()));
+            }
+            String queryString = URLEncodedUtils.format(pairs, "UTF-8");
+            if (path.contains("?")) {
+                path = path + "&" + queryString;
+            } else {
+                path = path + "?" + queryString;
+            }
+        }
+        //// finally, invoke request
+        HttpGet get = new HttpGet(path);
         HttpRequest request = new HttpRequest(this, getHost(), get);        
         request.start();
         return request;
