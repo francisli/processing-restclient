@@ -1,0 +1,6 @@
+HTTP Client Library for Processing
+==================================
+
+This is an HTTP client library for Processing.  It is a wrapper around the 
+Apache HttpComponents HttpClient that is intended to provide a more simplified 
+interface for basic HTTP interaction.
