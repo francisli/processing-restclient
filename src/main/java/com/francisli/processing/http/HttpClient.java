@@ -4,6 +4,14 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import oauth.signpost.OAuthConsumer;
+import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
+import oauth.signpost.exception.OAuthCommunicationException;
+import oauth.signpost.exception.OAuthExpectationFailedException;
+import oauth.signpost.exception.OAuthMessageSignerException;
+import org.apache.http.Header;
 import org.apache.http.HttpHost;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URLEncodedUtils;
@@ -55,6 +63,17 @@ public class HttpClient {
     public boolean useSSL;
     /** Set to false if you want to turn off logging information in the console. */
     public boolean logging;
+    
+    /** Set to true if you want the next request to be signed using OAuth. */
+    public boolean useOAuth;
+    /** For OAuth signing, the consumer key assigned to you by the service provider for your app. */
+    public String oauthConsumerKey;
+    /** For OAuth signing, the consumer secret assigned to you by the service provider for your app. */
+    public String oauthConsumerSecret;    
+    /** For OAuth signing, the access token for the user authorized to use your app. */
+    public String oauthAccessToken;
+    /** For OAuth signing, the access token secret for the user authorized to use your app. */
+    public String oauthAccessTokenSecret;
     
     /** Returns a new HttpClient instance that connects to the specified 
      * host and ports.
@@ -162,8 +181,18 @@ public class HttpClient {
             }
         }
         //// finally, invoke request
-        HttpGet get = new HttpGet(path);
-        HttpRequest request = new HttpRequest(this, getHost(), get);        
+        HttpGet get = new HttpGet(getHost().toURI() + path);
+        if (useOAuth) {
+            OAuthConsumer consumer = new CommonsHttpOAuthConsumer(oauthConsumerKey, oauthConsumerSecret);
+            consumer.setTokenWithSecret(oauthAccessToken, oauthAccessTokenSecret);
+            try {
+                consumer.sign(get);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+        }
+        HttpRequest request = new HttpRequest(this, getHost(), get);
         request.start();
         return request;
     }
