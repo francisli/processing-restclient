@@ -101,7 +101,7 @@ public class HttpClientTest
         assertTrue(false);
     }
     
-    public void testGETWithParams()
+    public void asdftestGETWithParams()
     {
         PApplet stub = new PApplet();
         stub.init();
@@ -131,4 +131,43 @@ public class HttpClientTest
         }
         assertTrue(false);
     }
+    
+    public void testPOSTSigned()
+    {
+        PApplet stub = new PApplet();
+        stub.init();
+        
+        HttpClient client = new HttpClient(stub, "upload.twitter.com");
+        client.useSSL = true;
+        client.useOAuth = true;
+        client.oauthConsumerKey = "<insert key here>";
+        client.oauthConsumerSecret = "<insert secret here>";
+        client.oauthAccessToken = "<insert token here>";
+        client.oauthAccessTokenSecret = "<insert token secret here>";
+        HashMap params = new HashMap();
+        params.put("status", "test library with image");
+        HashMap files = new HashMap();
+        files.put("media[]", "/Users/francisli/pic.png");
+        HttpRequest request = client.POST("/1/statuses/update_with_media.json", params, files);
+        for (int i = 0; i < 10; i++) {
+            HttpResponse response = client.get(request);
+            if (response != null) {
+                System.out.println(response.statusCode);
+                System.out.println(response.statusMessage);
+                System.out.println(response.contentType);
+                System.out.println(response.contentLength);
+                System.out.println(response.contentCharSet);
+                System.out.println(response.getContentAsString());
+                //System.out.println(response.getContentAsXMLElement().toString());
+                assertTrue(true);
+                return;
+            }
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(HttpClientTest.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        assertTrue(false);
+    }    
 }

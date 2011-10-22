@@ -1,14 +1,11 @@
 package com.francisli.processing.http;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
 import org.apache.http.HttpHost;
@@ -142,7 +139,7 @@ public class HttpClient {
                 }
             } catch (Exception e) {
                 callbackMethod = null;
-                throw new RuntimeException(e);
+                System.err.println("HttpClient: An error occurred in your responseRecieved() callback function");
             }
         }
     }
@@ -194,8 +191,7 @@ public class HttpClient {
             try {
                 consumer.sign(get);
             } catch (Exception e) {
-                e.printStackTrace();
-                throw new RuntimeException(e);
+                System.err.println("HttpClient: Unable to sign GET request for OAuth");
             }
         }
         HttpRequest request = new HttpRequest(this, getHost(), get);
