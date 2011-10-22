@@ -1,5 +1,7 @@
 package com.francisli.processing.http;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -17,6 +19,10 @@ import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.ByteArrayBody;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
 import processing.core.*;
 
 /** 
@@ -202,10 +208,23 @@ public class HttpClient {
      * in the same way a web browser submits a form.
      * 
      * @param path An absolute path to a file or script on the server
-     * @param params A collection of data to send to the server
+     * @param params A collection of parameters to send to the server
      * @return HttpRequest object representing this request
      */
     public HttpRequest POST(String path, Map params) {
+        return POST(path, params, null);
+    }
+    
+    /**
+     * Performs a POST request, sending the specified parameters and files
+     * as data in the same way a web browser submits a form.
+     * 
+     * @param path An absolute path to a file or script on the server
+     * @param params A collection of parameters to send to the server
+     * @param files A collection of files to send to the server
+     * @return 
+     */
+    public HttpRequest POST(String path, Map params, Map files) {
         //// clean up path a little bit- remove whitespace, add slash prefix
         path = path.trim();
         if (!path.startsWith("/")) {
@@ -213,22 +232,48 @@ public class HttpClient {
         }
         //// finally, invoke request
         HttpPost post = new HttpPost(getHost().toURI() + path);
+        MultipartEntity multipart = null;
+        //// if files passed, set up a multipart request
+        if (files != null) {
+            multipart = new MultipartEntity();
+            post.setEntity(multipart);
+            for (Object key: files.keySet()) {
+                Object value = files.get(key);
+                if (value instanceof byte[]) {
+                    multipart.addPart((String)key, new ByteArrayBody((byte[])value, "bytes.dat"));
+                } else if (value instanceof String) {
+                    multipart.addPart((String)key, new FileBody(new File((String) value)));
+                }
+            }
+        }
         //// if params passed, format into a query string and append
         if (params != null) {
-            ArrayList<BasicNameValuePair> pairs = new ArrayList<BasicNameValuePair>();
-            for (Object key: params.keySet()) {
-                Object value = params.get(key);
-                pairs.add(new BasicNameValuePair(key.toString(), value.toString()));
-            }
-            String queryString = URLEncodedUtils.format(pairs, HTTP.UTF_8);
-            if (path.contains("?")) {
-                path = path + "&" + queryString;
+            if (multipart == null) {
+                ArrayList<BasicNameValuePair> pairs = new ArrayList<BasicNameValuePair>();
+                for (Object key: params.keySet()) {
+                    Object value = params.get(key);
+                    pairs.add(new BasicNameValuePair(key.toString(), value.toString()));
+                }
+                String queryString = URLEncodedUtils.format(pairs, HTTP.UTF_8);
+                if (path.contains("?")) {
+                    path = path + "&" + queryString;
+                } else {
+                    path = path + "?" + queryString;
+                }
+                try {
+                    post.setEntity(new UrlEncodedFormEntity(pairs, HTTP.UTF_8));
+                } catch (UnsupportedEncodingException ex) {
+                    System.err.println("HttpClient: Unable to set POST data from parameters");
+                }
             } else {
-                path = path + "?" + queryString;
-            }
-            try {
-                post.setEntity(new UrlEncodedFormEntity(pairs, HTTP.UTF_8));
-            } catch (UnsupportedEncodingException ex) {
+                for (Object key: params.keySet()) {
+                    Object value = params.get(key);
+                    try {
+                        multipart.addPart((String)key, new StringBody((String) value));
+                    } catch (UnsupportedEncodingException ex) {
+                        System.err.println("HttpClient: Unable to add " + key + ", " + value);
+                    }
+                }
             }
         }
         if (useOAuth) {
@@ -237,8 +282,7 @@ public class HttpClient {
             try {
                 consumer.sign(post);
             } catch (Exception e) {
-                e.printStackTrace();
-                throw new RuntimeException(e);
+                System.err.println("HttpClient: Unable to sign POST request for OAuth");
             }
         }
         HttpRequest request = new HttpRequest(this, getHost(), post);

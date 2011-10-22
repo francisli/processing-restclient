@@ -46,5 +46,10 @@
       <artifactId>signpost-commonshttp4</artifactId>
       <version>1.2.1.1</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpmime</artifactId>
+      <version>4.1.2</version>
+    </dependency>
   </dependencies>
 </project>
