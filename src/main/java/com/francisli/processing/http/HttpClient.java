@@ -52,6 +52,14 @@ import processing.core.*;
  * }
  * </pre>
  * 
+ * <p>Because requests are performed in the background, it is important that
+ * you have a draw() function defined (even if it is empty, as shown in the 
+ * example above) and the animation loop is running.  Without a draw() function,
+ * Processing will terminate the sketch after setup(), which will shutdown
+ * all connections.  If the animation loop is not running, you will never get
+ * a responseReceived() callback.  The library will invoke your responseReceived()
+ * callback at the beginning of a frame, before your draw() function is called.
+ * 
  * @example
  * import com.francisli.processing.http.*;
  * 
@@ -62,8 +70,12 @@ import processing.core.*;
  *   client.GET("/1/statuses/public_timeline.json");
  * }
  * 
- * void requestReceived(HttpRequest request, HttpResponse response) {
+ * void responseReceived(HttpRequest request, HttpResponse response) {
  *   println(response.getContentAsString());
+ * }
+ * 
+ * void draw() {
+ *   
  * }
  * 
  * @author Francis Li
