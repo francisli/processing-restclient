@@ -1,3 +1,18 @@
+/**
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public 
+ * License as published by the Free Software Foundation, version 3.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General
+ * Public License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA  02111-1307  USA
+ */
 package com.francisli.processing.http;
 
 import java.io.ByteArrayInputStream;
@@ -16,34 +31,21 @@ import processing.xml.XMLElement;
  * An HttpResponse object contains both status information and the content
  * of the response to an HTTP request.
  *
- * <p>This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public 
- * License as published by the Free Software Foundation, version 3.</p>
- * 
- * <p>This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.</p>
- * 
- * <p>You should have received a copy of the GNU Lesser General
- * Public License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
- * Boston, MA  02111-1307  USA</p>
- *
  * @author Francis Li <mail@francisli.com>
+ * @usage Application
  */
 public class HttpResponse {
     org.apache.http.HttpResponse response;
     
-    /** The integer HTTP status code of this response */
+    /** int: the HTTP status code of this response */
     public int statusCode;
-    /** A short descriptive text message for the current status */
+    /** String: a short descriptive message for the current status */
     public String statusMessage;    
-    /** The MIME type of the content, including optional character set */
+    /** String: the MIME type of the content, including optional character set */
     public String contentType;
-    /** The raw data content of the response */
+    /** byte[]: the raw data content of the response */
     public byte[] content;
-    /** The length of the content data, the same as content.length */
+    /** int: the length of the content data, the same as content.length */
     public int contentLength;
     
     String contentCharSet;

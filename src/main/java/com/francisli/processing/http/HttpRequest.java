@@ -1,3 +1,18 @@
+/**
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public 
+ * License as published by the Free Software Foundation, version 3.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General
+ * Public License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA  02111-1307  USA
+ */
 package com.francisli.processing.http;
 
 import java.io.IOException;
@@ -10,25 +25,12 @@ import org.apache.http.util.EntityUtils;
 import processing.core.PApplet;
 
 /** 
- * An HttpRequest object represents a single HTTP request to a server.  Each
+ * <p>An HttpRequest object represents a single HTTP request to a server.  Each
  * request is dispatched in its own background thread and is passed along with
- * its response in the responseReceived() callback.
+ * its response in the responseReceived() callback.</p>
  * 
- * <p>This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public 
- * License as published by the Free Software Foundation, version 3.</p>
- * 
- * <p>This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.</p>
- * 
- * <p>You should have received a copy of the GNU Lesser General
- * Public License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
- * Boston, MA  02111-1307  USA</p>
- * 
- * @author Francis Li <mail@francisli.com>
+ * @author Francis Li
+ * @usage Application
  */
 public class HttpRequest extends Thread {
     HttpClient client;
@@ -41,6 +43,9 @@ public class HttpRequest extends Thread {
         this.request = request;
     }
     
+    /**
+     * @exclude
+     */
     @Override
     public void run() {
         try {

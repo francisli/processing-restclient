@@ -1,3 +1,19 @@
+/**
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public 
+ * License as published by the Free Software Foundation, version 3.</p>
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.</p>
+ * 
+ * You should have received a copy of the GNU Lesser General
+ * Public License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA  02111-1307  USA
+ * 
+ */
 package com.francisli.processing.http;
 
 import java.io.File;
@@ -23,9 +39,9 @@ import org.apache.http.entity.mime.content.StringBody;
 import processing.core.*;
 
 /** 
- * The HttpClient class provides the interface for performing different types
+ * <p>The HttpClient class provides the interface for performing different types
  * of HTTP requests against a particular server. Instantiate a new HttpClient
- * object for each server you wish to communicate with.
+ * object for each server you wish to communicate with.</p>
  * 
  * <p>Requests are performed in the background and responses are returned in a
  * callback function with the following signature:</p>
@@ -35,22 +51,23 @@ import processing.core.*;
  * 
  * }
  * </pre>
- *
- * <p>This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public 
- * License as published by the Free Software Foundation, version 3.</p>
  * 
- * <p>This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.</p>
+ * @example
+ * import com.francisli.processing.http.*;
  * 
- * <p>You should have received a copy of the GNU Lesser General
- * Public License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
- * Boston, MA  02111-1307  USA</p>
+ * HttpClient client;
  * 
- * @author Francis Li <mail@francisli.com>
+ * void setup() {
+ *   client = new HttpClient(this, "api.twitter.com");
+ *   client.GET("/1/statuses/public_timeline.json");
+ * }
+ * 
+ * void requestReceived(HttpRequest request, HttpResponse response) {
+ *   println(response.getContentAsString());
+ * }
+ * 
+ * @author Francis Li
+ * @usage Application
  */
 public class HttpClient {
    
@@ -62,29 +79,37 @@ public class HttpClient {
     
     HttpHost host, secureHost;
     
-    /** Set to true if you want the next request to use SSL encryption. */
+    /** boolean: set true to use SSL encryption */
     public boolean useSSL;
-    /** Set to false if you want to turn off logging information in the console. */
+    /** boolean: set false to turn off logging information in the console */
     public boolean logging;
     
-    /** Set to true if you want the next request to be signed using OAuth. */
+    /** boolean: set true to sign requests using OAuth */
     public boolean useOAuth;
-    /** For OAuth signing, the consumer key assigned to you by the service provider for your app. */
+    /** String: the OAuth consumer key assigned to you for your app */
     public String oauthConsumerKey;
-    /** For OAuth signing, the consumer secret assigned to you by the service provider for your app. */
+    /** String: the OAuth consumer secret assigned to you for your app */
     public String oauthConsumerSecret;    
-    /** For OAuth signing, the access token for the user authorized to use your app. */
+    /** String: the OAuth access token for a user of your app */
     public String oauthAccessToken;
-    /** For OAuth signing, the access token secret for the user authorized to use your app. */
+    /** String: the OAuth access token secret for a user of your app*/
     public String oauthAccessTokenSecret;
+    
+    public HttpClient(PApplet parent, String hostname) {
+        this(parent, hostname, 80, 443);
+    }
+        
+    public HttpClient(PApplet parent, String hostname, int port) {
+        this(parent, hostname, port, 443);
+    }
     
     /** Returns a new HttpClient instance that connects to the specified 
      * host and ports.
      * 
-     * @param parent PApplet of the sketch (typically use "this")
-     * @param hostname The domain name or IP address of the host
-     * @param port The port to connect to for unsecured connections (typically 80)
-     * @param securePort The port to connect to for secure connections (typically 443)
+     * @param parent PApplet: typically use "this"
+     * @param hostname String: the domain name or IP address of the host
+     * @param port int: the port to use for unsecured connections (typically 80)
+     * @param securePort int: The port to use for secure connections (typically 443)
      */
     public HttpClient(PApplet parent, String hostname, int port, int securePort) {
         this.parent = parent;
@@ -98,33 +123,18 @@ public class HttpClient {
         host = new HttpHost(hostname, port, "http");
         secureHost = new HttpHost(hostname, securePort, "https");
         logging = true;
-    }
-    
-    /** Returns a new HttpClient instance that connects to the specified 
-     * host and port.  The default secure SSL port is assumed.
-     * 
-     * @param parent PApplet of the sketch (typically use "this")
-     * @param hostname The domain name or IP address of the host
-     * @param port The port to connect to for unsecured connections (typically 80)
+    }    
+
+    /**
+     * @exclude
      */
-    public HttpClient(PApplet parent, String hostname, int port) {
-        this(parent, hostname, port, 443);
-    }
-    
-    /** Returns a new HttpClient instance that connects to the specified 
-     * host on default ports.
-     * 
-     * @param parent PApplet of the sketch (typically use "this")
-     * @param hostname The domain name or IP address of the host
-     */
-    public HttpClient(PApplet parent, String hostname) {
-        this(parent, hostname, 80, 443);
-    }
-    
     public void dispose() {
         httpClient.getConnectionManager().shutdown();
     }
     
+    /**
+     * @exclude
+     */
     public void pre() {
         HashMap<HttpRequest, HttpResponse> requestMapClone;
         synchronized(this) {
