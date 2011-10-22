@@ -1,5 +1,6 @@
 package com.francisli.processing.http;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,15 +9,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
-import oauth.signpost.exception.OAuthCommunicationException;
-import oauth.signpost.exception.OAuthExpectationFailedException;
-import oauth.signpost.exception.OAuthMessageSignerException;
-import org.apache.http.Header;
 import org.apache.http.HttpHost;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
 import processing.core.*;
 
 /** 
@@ -173,7 +173,7 @@ public class HttpClient {
                 Object value = params.get(key);
                 pairs.add(new BasicNameValuePair(key.toString(), value.toString()));
             }
-            String queryString = URLEncodedUtils.format(pairs, "UTF-8");
+            String queryString = URLEncodedUtils.format(pairs, HTTP.UTF_8);
             if (path.contains("?")) {
                 path = path + "&" + queryString;
             } else {
@@ -193,6 +193,55 @@ public class HttpClient {
             }
         }
         HttpRequest request = new HttpRequest(this, getHost(), get);
+        request.start();
+        return request;
+    }
+    
+    /**
+     * Performs a POST request, sending the specified parameters as data 
+     * in the same way a web browser submits a form.
+     * 
+     * @param path An absolute path to a file or script on the server
+     * @param params A collection of data to send to the server
+     * @return HttpRequest object representing this request
+     */
+    public HttpRequest POST(String path, Map params) {
+        //// clean up path a little bit- remove whitespace, add slash prefix
+        path = path.trim();
+        if (!path.startsWith("/")) {
+            path = "/" + path;
+        }
+        //// finally, invoke request
+        HttpPost post = new HttpPost(getHost().toURI() + path);
+        //// if params passed, format into a query string and append
+        if (params != null) {
+            ArrayList<BasicNameValuePair> pairs = new ArrayList<BasicNameValuePair>();
+            for (Object key: params.keySet()) {
+                Object value = params.get(key);
+                pairs.add(new BasicNameValuePair(key.toString(), value.toString()));
+            }
+            String queryString = URLEncodedUtils.format(pairs, HTTP.UTF_8);
+            if (path.contains("?")) {
+                path = path + "&" + queryString;
+            } else {
+                path = path + "?" + queryString;
+            }
+            try {
+                post.setEntity(new UrlEncodedFormEntity(pairs, HTTP.UTF_8));
+            } catch (UnsupportedEncodingException ex) {
+            }
+        }
+        if (useOAuth) {
+            OAuthConsumer consumer = new CommonsHttpOAuthConsumer(oauthConsumerKey, oauthConsumerSecret);
+            consumer.setTokenWithSecret(oauthAccessToken, oauthAccessTokenSecret);
+            try {
+                consumer.sign(post);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+        }
+        HttpRequest request = new HttpRequest(this, getHost(), post);
         request.start();
         return request;
     }
