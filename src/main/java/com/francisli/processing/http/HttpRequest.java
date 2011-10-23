@@ -31,6 +31,7 @@ import processing.core.PApplet;
  * 
  * @author Francis Li
  * @usage Application
+ * @param request HttpRequest: any variable of type HttpRequest
  */
 public class HttpRequest extends Thread {
     HttpClient client;

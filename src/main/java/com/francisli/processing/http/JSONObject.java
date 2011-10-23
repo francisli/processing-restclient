@@ -26,6 +26,7 @@ import java.util.HashMap;
  *
  * @author Francis Li <mail@francisli.com>
  * @usage Application
+ * @param jsonObject JSONObject: any variable of type JSONObject
  */
 public class JSONObject {
     Object object;
@@ -59,7 +60,7 @@ public class JSONObject {
     /**
      * Returns true if this JSONObject represents a null value.
      * 
-     * @return true if this JSONObject represents a null value, false otherwise
+     * @return boolean
      */
     public boolean isNull() {
         return object == null;
@@ -69,7 +70,7 @@ public class JSONObject {
      * Returns true if this JSONObject represents a Map whose values can
      * be retrieved by key.
      * 
-     * @return true if this JSONObject represents a Map, false otherwise
+     * @return boolean
      */
     public boolean isMap() {
         return object instanceof HashMap;
@@ -80,7 +81,7 @@ public class JSONObject {
      * JSONObject is a dictionary.
      * 
      * @param key The key you wish to retrieve the value for
-     * @return A JSONObject representing the value
+     * @return JSONObject
      */
     public JSONObject get(String key) {
         HashMap map = (HashMap)object;
@@ -91,7 +92,7 @@ public class JSONObject {
      * Returns true if this JSONObject represents a list whose elements can
      * be retrieved by index position.
      * 
-     * @return true if this JSONObject represents a list, false otherwise
+     * @return boolean
      */
     public boolean isList() {
         return object instanceof ArrayList;
@@ -102,7 +103,7 @@ public class JSONObject {
      * JSONObject represents a list.
      * 
      * @param i Index of the element you wish to retrieve
-     * @return A JSONObject representing the element
+     * @return JSONObject
      */
     public JSONObject get(int i) {
         ArrayList array = (ArrayList)object;
@@ -113,7 +114,7 @@ public class JSONObject {
      * Returns the number of JSONObject elements in this list, given that this
      * JSONObject represents a list.
      * 
-     * @return size of this list
+     * @return int
      */
     public int size() {
         ArrayList array = (ArrayList)object;
@@ -123,7 +124,7 @@ public class JSONObject {
     /**
      * Returns true if this JSONObject represents a String, false otherwise.
      * 
-     * @return true if this JSONObject represents a String, false otherwise.
+     * @return boolean
      */
     public boolean isString() {
         return object instanceof String;
@@ -132,7 +133,7 @@ public class JSONObject {
     /**
      * Returns the value of this JSONObject as a String.
      * 
-     * @return A String object
+     * @return String
      */
     public String stringValue() {
         return (String) object;
@@ -142,7 +143,7 @@ public class JSONObject {
      * Returns true if this JSONObject represents a floating-point value, false 
      * otherwise.
      * 
-     * @return true if this JSONObject represents a floating-point value, false otherwise.
+     * @return boolean
      */
     public boolean isFloatingPoint() {
         return (object instanceof Double) || (object instanceof BigDecimal);
@@ -151,7 +152,7 @@ public class JSONObject {
     /**
      * Returns the value of this JSONObject as a float.
      * 
-     * @return A float value
+     * @return float
      */
     public float floatValue() {
         if (object instanceof Double) {
@@ -165,7 +166,7 @@ public class JSONObject {
     /**
      * Returns the value of this JSONObject as a double.
      * 
-     * @return A double value
+     * @return double
      */
     public double doubleValue() {
         if (object instanceof Double) {
@@ -179,7 +180,7 @@ public class JSONObject {
     /**
      * Returns true if this JSONObject represents an integer value, false otherwise.
      * 
-     * @return true if this JSONObject represents an integer value, false otherwise.
+     * @return boolean
      */
     public boolean isInteger() {
         return (object instanceof Long) || (object instanceof BigInteger);
@@ -188,7 +189,7 @@ public class JSONObject {
     /**
      * Returns the value of this JSONObject as an int.
      * 
-     * @return An int value
+     * @return int
      */
     public int intValue() {
         if (object instanceof Long) {
@@ -202,7 +203,7 @@ public class JSONObject {
     /**
      * Returns the value of this JSONObject as a long.
      * 
-     * @return A long value
+     * @return long
      */
     public long longValue() {
         if (object instanceof Long) {
@@ -216,7 +217,7 @@ public class JSONObject {
     /**
      * Returns true if this JSONObject represents a boolean value, false otherwise.
      * 
-     * @return true if this JSONObject represents a boolean value, false otherwise.
+     * @return boolean
      */
     public boolean isBoolean() {
         return object instanceof Boolean;
@@ -225,7 +226,7 @@ public class JSONObject {
     /**
      * Returns the value of this JSONObject as a boolean.
      * 
-     * @return A boolean value
+     * @return boolean
      */
     public boolean booleanValue() {
         return ((Boolean)object).booleanValue();

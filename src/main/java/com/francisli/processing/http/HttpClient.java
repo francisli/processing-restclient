@@ -80,6 +80,7 @@ import processing.core.*;
  * 
  * @author Francis Li
  * @usage Application
+ * @param client HttpClient: any variable of type HttpClient
  */
 public class HttpClient {
    
@@ -169,8 +170,8 @@ public class HttpClient {
     /** 
      * Performs a GET request to fetch content from the specified path.
      * 
-     * @param path An absolute path to file or script on the server
-     * @return HttpRequest object representing this request
+     * @param path String: an absolute path to file or script on the server
+     * @return HttpRequest
      */
     public HttpRequest GET(String path) {
         return GET(path, null);
@@ -181,9 +182,7 @@ public class HttpClient {
      * the specified parameters. The parameters are assembled into a query
      * string and appended to the path.
      * 
-     * @param path An absolute path to file or script on the server
-     * @param params A collection of parameters to pass as a query string with the path
-     * @return HttpRequest object representing this request
+     * @param params String: a collection of parameters to pass as a query string with the path
      */
     public HttpRequest GET(String path, Map params) {
         //// clean up path a little bit- remove whitespace, add slash prefix
@@ -225,22 +224,16 @@ public class HttpClient {
      * Performs a POST request, sending the specified parameters as data 
      * in the same way a web browser submits a form.
      * 
-     * @param path An absolute path to a file or script on the server
-     * @param params A collection of parameters to send to the server
-     * @return HttpRequest object representing this request
+     * @param path String: an absolute path to a file or script on the server
+     * @param params HashMap: a collection of parameters to send to the server
+     * @return HttpRequest
      */
     public HttpRequest POST(String path, Map params) {
         return POST(path, params, null);
     }
     
     /**
-     * Performs a POST request, sending the specified parameters and files
-     * as data in the same way a web browser submits a form.
-     * 
-     * @param path An absolute path to a file or script on the server
-     * @param params A collection of parameters to send to the server
-     * @param files A collection of files to send to the server
-     * @return 
+     * @param files HashMap: a collection of files to send to the server
      */
     public HttpRequest POST(String path, Map params, Map files) {
         //// clean up path a little bit- remove whitespace, add slash prefix

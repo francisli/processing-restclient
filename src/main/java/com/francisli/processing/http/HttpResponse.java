@@ -33,6 +33,7 @@ import processing.xml.XMLElement;
  *
  * @author Francis Li <mail@francisli.com>
  * @usage Application
+ * @param response HttpResponse: any variable of type HttpResponse
  */
 public class HttpResponse {
     org.apache.http.HttpResponse response;
@@ -69,7 +70,7 @@ public class HttpResponse {
     /** 
      * Converts the content into a String.
      * 
-     * @return contents as a String
+     * @return String
      */
     public String getContentAsString() {
         try {
@@ -82,7 +83,7 @@ public class HttpResponse {
     /** 
      * Parses the data as a JSON document and returns it as a JSONObject.
      * 
-     * @return A JSONObject representing the parsed JSON data
+     * @return JSONObject
      */
     public JSONObject getContentAsJSONObject() {
         JSONReader json = new JSONReader();
@@ -92,7 +93,7 @@ public class HttpResponse {
     /** 
      * Parses the data as an XML document and returns an XMLElement object.
      * 
-     * @return XMLElement object representing the root of the document
+     * @return XMLElement
      */
     public XMLElement getContentAsXMLElement() {
         return XMLElement.parse(getContentAsString());
