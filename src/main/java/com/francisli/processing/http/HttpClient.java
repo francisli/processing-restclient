@@ -253,7 +253,11 @@ public class HttpClient {
                 if (value instanceof byte[]) {
                     multipart.addPart((String)key, new ByteArrayBody((byte[])value, "bytes.dat"));
                 } else if (value instanceof String) {
-                    multipart.addPart((String)key, new FileBody(new File((String) value)));
+                    File file = new File((String) value);
+                    if (!file.exists()) {
+                        file = parent.sketchFile((String) value);
+                    }
+                    multipart.addPart((String)key, new FileBody(file));
                 }
             }
         }
