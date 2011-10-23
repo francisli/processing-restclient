@@ -35,7 +35,7 @@ public class HttpClientTest
     /**
      * Executes a GET request. TODO: make it into an actual test.
      */
-    public void asdftestGET()
+    public void testGET()
     {
         PApplet stub = new PApplet();
         stub.init();
@@ -132,7 +132,7 @@ public class HttpClientTest
         assertTrue(false);
     }
     
-    public void testPOSTSigned()
+    public void asdftestPOSTSigned()
     {
         PApplet stub = new PApplet();
         stub.init();
