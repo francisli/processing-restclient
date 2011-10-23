@@ -1,0 +1,183 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <title>HttpClient / HTTP</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="Author" content="Francis Li" />
+              <link href="style.css" rel="stylesheet" type="text/css" />
+    </head>
+    <body id="Library-ref" onload="" >
+
+        <!-- ==================================== PAGE ============================ --> 
+        <div id="container">
+
+            <!-- ==================================== HEADER ============================ --> 
+            <div id="header">
+
+            </div> 
+
+            <a id="TOP" name="TOP"></a>
+
+            <!-- ==================================== CONTENT - Headers ============================ -->
+            <div class="content">
+
+                <span class="lib-nav">
+                    <a href="index.html">Library</a>
+                </span>
+
+                <table cellpadding="0" cellspacing="0" border="0" class="ref-item">
+                    <tr class="name-row">
+                        <th scope="row"><!--*-->Name<!--*--></th>
+                        <td><h3>HttpClient</h3></td>
+                    </tr>
+
+                    <tr class="">
+                        <th scope="row"><!--*-->Examples<!--*--></th>
+                        <td>
+                            <div class="example"><pre>import com.francisli.processing.http.*;
+
+HttpClient client;
+
+void setup() {
+  client = new HttpClient(this, "api.twitter.com");
+  client.GET("/1/statuses/public_timeline.json");
+}
+
+void responseReceived(HttpRequest request, HttpResponse response) {
+  println(response.getContentAsString());
+}
+
+void draw() {
+  
+}</pre></div>
+                        </td>
+                    </tr>
+
+                    <tr class="">
+                        <th scope="row"><!--*-->Description<!--*--></th>
+                        <td><p>The HttpClient class provides the interface for performing different types
+ of HTTP requests against a particular server. Instantiate a new HttpClient
+ object for each server you wish to communicate with.</p>
+ 
+ <p>Requests are performed in the background and responses are returned in a
+ callback function with the following signature:</p>
+ 
+ <pre>
+ void responseReceived(HttpRequest request, HttpResponse response) {
+ 
+ }
+ </pre>
+ 
+ <p>Because requests are performed in the background, it is important that
+ you have a draw() function defined (even if it is empty, as shown in the 
+ example above) and the animation loop is running.  Without a draw() function,
+ Processing will terminate the sketch after setup(), which will shutdown
+ all connections.  If the animation loop is not running, you will never get
+ a responseReceived() callback.  The library will invoke your responseReceived()
+ callback at the beginning of a frame, before your draw() function is called.</td>
+                    </tr>
+
+                    <tr class="">
+                        <th scope="row">Fields</th>
+                        <td><table cellpadding="0" cellspacing="0" border="0">
+                                <tr class="">
+                                    <th scope="row"><a href="HttpClient_useSSL.html">useSSL</a></th>
+                                    <td>boolean: set true to use SSL encryption</td>
+                                </tr>
+                                <tr class="">
+                                    <th scope="row"><a href="HttpClient_logging.html">logging</a></th>
+                                    <td>boolean: set false to turn off logging information in the console</td>
+                                </tr>
+                                <tr class="">
+                                    <th scope="row"><a href="HttpClient_useOAuth.html">useOAuth</a></th>
+                                    <td>boolean: set true to sign requests using OAuth</td>
+                                </tr>
+                                <tr class="">
+                                    <th scope="row"><a href="HttpClient_oauthConsumerKey.html">oauthConsumerKey</a></th>
+                                    <td>String: the OAuth consumer key assigned to you for your app</td>
+                                </tr>
+                                <tr class="">
+                                    <th scope="row"><a href="HttpClient_oauthConsumerSecret.html">oauthConsumerSecret</a></th>
+                                    <td>String: the OAuth consumer secret assigned to you for your app</td>
+                                </tr>
+                                <tr class="">
+                                    <th scope="row"><a href="HttpClient_oauthAccessToken.html">oauthAccessToken</a></th>
+                                    <td>String: the OAuth access token for a user of your app</td>
+                                </tr>
+                                <tr class="">
+                                    <th scope="row"><a href="HttpClient_oauthAccessTokenSecret.html">oauthAccessTokenSecret</a></th>
+                                    <td>String: the OAuth access token secret for a user of your app</td>
+                                </tr>
+                            </table></td>
+                    </tr>
+
+                    <tr class="">
+                        <th scope="row"><!--*-->Methods<!--*--></th>
+                        <td><table cellpadding="0" cellspacing="0" border="0">
+                                <tr class="">
+                                    <th scope="row"><a href="HttpClient_GET_.html">GET()</a></th>
+                                    <td>Performs a GET request to fetch content from the specified path.</td>
+                                </tr>
+                                <tr class="">
+                                    <th scope="row"><a href="HttpClient_POST_.html">POST()</a></th>
+                                    <td>Performs a POST request, sending the specified parameters as data 
+ in the same way a web browser submits a form.</td>
+                                </tr>
+                            </table></td>
+                    </tr>
+
+                    <tr class="">
+                        <th scope="row"><!--*-->Constructor<!--*--></th>
+                        <td><pre>HttpClient(<kbd>parent</kbd>, <kbd>hostname</kbd>)
+HttpClient(<kbd>parent</kbd>, <kbd>hostname</kbd>, <kbd>port</kbd>)
+HttpClient(<kbd>parent</kbd>, <kbd>hostname</kbd>, <kbd>port</kbd>, <kbd>securePort</kbd>)
+</pre></td>
+                    </tr>
+
+                    <tr class="">
+                        <th scope="row"><!--*-->Parameters<!--*--></th>
+                        <td><table cellpadding="0" cellspacing="0" border="0">
+                                <tr class="">
+                                    <th scope="row">parent</th>
+                                    <td>PApplet: typically use "this"</td>
+                                </tr>
+                                <tr class="">
+                                    <th scope="row">hostname</th>
+                                    <td>String: the domain name or IP address of the host</td>
+                                </tr>
+                                <tr class="">
+                                    <th scope="row">port</th>
+                                    <td>int: the port to use for unsecured connections (typically 80)</td>
+                                </tr>
+                                <tr class="">
+                                    <th scope="row">securePort</th>
+                                    <td>int: The port to use for secure connections (typically 443)</td>
+                                </tr>
+                            </table></td>
+                    </tr>
+
+                    <tr class="">
+                        <th scope="row"><!--*-->Usage<!--*--></th>
+                        <td>Application</td>
+                    </tr>
+                </table>
+
+                Updated on Sat Oct 22 19:14:12 PDT 2011<br /><br />
+
+                <!-- Creative Commons License -->
+
+                <div class="license">
+                    <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/2.0/"><img alt="Creative Commons License" border="0" src="http://creativecommons.org/images/public/somerights20.gif" /></a>
+                </div>
+
+            </div>
+
+            <!-- ==================================== FOOTER ============================ --> 
+            <div id="footer">
+
+            </div>
+
+        </div>
+    </body>
+</html>
