@@ -7,6 +7,8 @@
  * direct access to data from a service provider through what is commonly 
  * called a "web services" API.</p>
  * <p>To get started, refer to the HttpClient documentation.</p>
+ * <p><a href="https://github.com/downloads/francisli/processing-http/http.zip">Download now from Github (http.zip)</a></p>
+ * <p><a href="https://github.com/francisli/processing-http/wiki">See (and contribute!) examples on the wiki</a></p>
  * 
  * @name HTTP
  * @author Francis Li
