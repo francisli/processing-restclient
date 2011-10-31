@@ -18,10 +18,13 @@ package com.francisli.processing.http;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
 import org.apache.http.HttpHost;
@@ -36,6 +39,7 @@ import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.ByteArrayBody;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import processing.core.*;
 
 /** 
@@ -87,7 +91,7 @@ public class HttpClient {
     PApplet parent;
     Method callbackMethod;
         
-    DefaultHttpClient httpClient = new DefaultHttpClient();
+    DefaultHttpClient httpClient = new DefaultHttpClient(new ThreadSafeClientConnManager());
     HashMap<HttpRequest, HttpResponse> requestMap = new HashMap<HttpRequest, HttpResponse>();
     
     HttpHost host, secureHost;
@@ -148,7 +152,7 @@ public class HttpClient {
     /**
      * @exclude
      */
-    public void pre() {
+    public void pre() throws Throwable {
         HashMap<HttpRequest, HttpResponse> requestMapClone;
         synchronized(this) {
             requestMapClone = (HashMap<HttpRequest, HttpResponse>)requestMap.clone();
@@ -157,12 +161,15 @@ public class HttpClient {
             HttpResponse response = requestMapClone.get(request);
             try {
                 callbackMethod.invoke(parent, new Object[] { request, response });
-                synchronized(this) {
-                    requestMap.remove(request);
-                }
-            } catch (Exception e) {
-                callbackMethod = null;
-                System.err.println("HttpClient: An error occurred in your responseRecieved() callback function");
+            } catch (IllegalAccessException ex) {
+
+            } catch (IllegalArgumentException ex) {
+
+            } catch (InvocationTargetException ex) {
+                throw ex.getCause();
+            }
+            synchronized(this) {
+                requestMap.remove(request);
             }
         }
     }
