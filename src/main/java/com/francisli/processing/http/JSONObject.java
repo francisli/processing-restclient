@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
+import org.stringtree.json.JSONReader;
 
 /**
  * A JSONObject represents some data from a JSON response. You can query
@@ -48,6 +49,11 @@ public class JSONObject {
         }
         this.object = object;
     }     
+    
+    public static JSONObject parse(String data) {
+        JSONReader json = new JSONReader();
+        return new JSONObject(json.read(data));
+    }
     
     /** Returns the textual representation of this JSON object. */
     public String toString() {

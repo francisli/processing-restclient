@@ -23,6 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.http.HttpEntity;
 import org.apache.http.StatusLine;
+import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.stringtree.json.JSONReader;
 import processing.xml.XMLElement;
@@ -65,6 +66,9 @@ public class HttpResponse {
         content = EntityUtils.toByteArray(entity);
         contentLength = content.length;
         contentCharSet = EntityUtils.getContentCharSet(entity);
+        if (contentCharSet == null) {
+            contentCharSet = HTTP.UTF_8;
+        }
     }
     
     /** 
