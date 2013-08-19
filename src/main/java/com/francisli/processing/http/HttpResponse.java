@@ -26,7 +26,7 @@ import org.apache.http.StatusLine;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.stringtree.json.JSONReader;
-import processing.xml.XMLElement;
+import processing.data.XML;
 
 /** 
  * An HttpResponse object contains both status information and the content
@@ -95,11 +95,11 @@ public class HttpResponse {
     }
     
     /** 
-     * Parses the data as an XML document and returns an XMLElement object.
+     * Parses the data as an XML document and returns an XML object.
      * 
-     * @return XMLElement
+     * @return XML
      */
-    public XMLElement getContentAsXMLElement() {
-        return XMLElement.parse(getContentAsString());
+    public XML getContentAsXMLElement() throws Exception {
+        return XML.parse(getContentAsString());
     }
 }
