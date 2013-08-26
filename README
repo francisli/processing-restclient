@@ -4,3 +4,6 @@ HTTP Client Library for Processing
 This is an HTTP client library for Processing.  It is a wrapper around the 
 Apache HttpComponents HttpClient that is intended to provide a more simplified 
 interface for basic HTTP interaction.
+
+You will need to manually do a maven install of core.jar from your Processing installation and stringtree jar when using maven to build this, as there are no current maven artifacts stored at maven central for these.
+

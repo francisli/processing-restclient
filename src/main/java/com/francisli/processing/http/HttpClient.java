@@ -28,9 +28,12 @@ import java.util.logging.Logger;
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
 import org.apache.http.HttpHost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
@@ -40,6 +43,7 @@ import org.apache.http.entity.mime.content.ByteArrayBody;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.stringtree.json.JSONWriter;
 import processing.core.*;
 
 /** 
@@ -173,6 +177,18 @@ public class HttpClient {
             }
         }
     }
+
+    private void checkOAuth(String method, HttpRequestBase base) {
+    	   if (useOAuth) {
+            OAuthConsumer consumer = new CommonsHttpOAuthConsumer(oauthConsumerKey, oauthConsumerSecret);
+            consumer.setTokenWithSecret(oauthAccessToken, oauthAccessTokenSecret);
+            try {
+                consumer.sign(base);
+            } catch (Exception e) {
+                System.err.println("HttpClient: Unable to sign "+method+" request for OAuth");
+            }
+        }
+    }
         
     /** 
      * Performs a GET request to fetch content from the specified path.
@@ -213,15 +229,7 @@ public class HttpClient {
         }
         //// finally, invoke request
         HttpGet get = new HttpGet(getHost().toURI() + path);
-        if (useOAuth) {
-            OAuthConsumer consumer = new CommonsHttpOAuthConsumer(oauthConsumerKey, oauthConsumerSecret);
-            consumer.setTokenWithSecret(oauthAccessToken, oauthAccessTokenSecret);
-            try {
-                consumer.sign(get);
-            } catch (Exception e) {
-                System.err.println("HttpClient: Unable to sign GET request for OAuth");
-            }
-        }
+        checkOAuth("GET", get);
         HttpRequest request = new HttpRequest(this, getHost(), get);
         request.start();
         return request;
@@ -237,6 +245,23 @@ public class HttpClient {
      */
     public HttpRequest POST(String path, Map params) {
         return POST(path, params, null);
+    }
+
+    public HttpRequest POST_JSON(String path, Map params) {
+    	   //// clean up path a little bit- remove whitespace, add slash prefix
+        path = path.trim();
+        if (!path.startsWith("/")) {
+            path = "/" + path;
+        }
+        //// finally, invoke request
+        HttpPost post = new HttpPost(getHost().toURI() + path);
+        JSONWriter writer = new JSONWriter();
+        post.setEntity(new StringEntity(writer.write(params), 
+                             ContentType.create("application/json")));
+        checkOAuth("POST JSON", post);
+        HttpRequest request = new HttpRequest(this, getHost(), post);
+        request.start();
+        return request;
     }
     
     /**
@@ -298,15 +323,7 @@ public class HttpClient {
                 }
             }
         }
-        if (useOAuth) {
-            OAuthConsumer consumer = new CommonsHttpOAuthConsumer(oauthConsumerKey, oauthConsumerSecret);
-            consumer.setTokenWithSecret(oauthAccessToken, oauthAccessTokenSecret);
-            try {
-                consumer.sign(post);
-            } catch (Exception e) {
-                System.err.println("HttpClient: Unable to sign POST request for OAuth");
-            }
-        }
+        checkOAuth("POST", post);
         HttpRequest request = new HttpRequest(this, getHost(), post);
         request.start();
         return request;
