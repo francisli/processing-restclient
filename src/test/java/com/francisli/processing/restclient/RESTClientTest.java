@@ -37,21 +37,17 @@ public class RESTClientTest
      */
     public void testGET()
     {
-        PApplet stub = new PApplet();
+        PApplet stub = new PApplet() {
+            public void responseReceived(HttpRequest request, HttpResponse response) { }
+        };
 
-        RESTClient client = new RESTClient(stub, "api.twitter.com", 80);
-        HttpRequest request = client.GET("/1/statuses/public_timeline.xml");
+        RESTClient client = new RESTClient(stub, "www.googleapis.com");
+        client.useSSL = true;
+        HttpRequest request = client.GET("/books/v1/volumes?q=isbn:0747532699");
         for (int i = 0; i < 10; i++) {
             HttpResponse response = client.get(request);
             if (response != null) {
-                System.out.println(response.statusCode);
-                System.out.println(response.statusMessage);
-                System.out.println(response.contentType);
-                System.out.println(response.contentLength);
-                System.out.println(response.contentCharSet);
-                //System.out.println(response.getContentAsString());
-                //System.out.println(response.getContentAsXMLElement().toString());
-                assertTrue(true);
+                assertEquals(200, response.statusCode);
                 return;
             }
             try {
@@ -60,6 +56,5 @@ public class RESTClientTest
                 Logger.getLogger(RESTClientTest.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        assertTrue(false);
     }
 }
