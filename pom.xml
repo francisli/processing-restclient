@@ -6,6 +6,9 @@
   <artifactId>restclient</artifactId>
   <version>1</version>
   <packaging>jar</packaging>
+  <build>
+    <finalName>restclient</finalName>
+  </build>
 
   <name>restclient</name>
   <url>http://maven.apache.org</url>
@@ -18,7 +21,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
+      <version>4.12</version>
       <scope>test</scope>
     </dependency>
     <dependency>
