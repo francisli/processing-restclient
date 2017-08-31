@@ -13,15 +13,9 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA  02111-1307  USA
  */
-package com.francisli.processing.http;
+package com.francisli.processing.restclient;
 
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.util.EntityUtils;
 import processing.core.PApplet;
 
 /** 
@@ -34,11 +28,11 @@ import processing.core.PApplet;
  * @param request HttpRequest: any variable of type HttpRequest
  */
 public class HttpRequest extends Thread {
-    HttpClient client;
+    RESTClient client;
     HttpHost host;
     org.apache.http.HttpRequest request;
     
-    HttpRequest(HttpClient client, HttpHost host, org.apache.http.HttpRequest request) {
+    HttpRequest(RESTClient client, HttpHost host, org.apache.http.HttpRequest request) {
         this.client = client;
         this.host = host;
         this.request = request;
@@ -51,13 +45,13 @@ public class HttpRequest extends Thread {
     public void run() {
         try {
             if (client.logging) {
-                PApplet.println("HttpClient: Connecting to " + host.getHostName() + " on port " + host.getPort());
-                PApplet.println("HttpClient: " + request.getRequestLine().toString());
+                PApplet.println("RESTClient: Connecting to " + host.getHostName() + " on port " + host.getPort());
+                PApplet.println("RESTClient: " + request.getRequestLine().toString());
             }
             org.apache.http.HttpResponse httpResponse = client.httpClient.execute(host, request);
             client.put(this, new HttpResponse(httpResponse));
         } catch (Exception e) {
-            System.err.println("HttpClient: An error occurred- ");
+            System.err.println("RESTClient: An error occurred- ");
             e.printStackTrace();;
         }        
     }

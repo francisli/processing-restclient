@@ -14,37 +14,35 @@
  * Boston, MA  02111-1307  USA
  * 
  */
-package com.francisli.processing.http;
+package com.francisli.processing.restclient;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import oauth.signpost.OAuthConsumer;
-import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
+
+import org.apache.http.Consts;
 import org.apache.http.HttpHost;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
-import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.ByteArrayBody;
 import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.entity.mime.content.StringBody;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import processing.core.*;
 
 /** 
- * <p>The HttpClient class provides the interface for performing different types
- * of HTTP requests against a particular server. Instantiate a new HttpClient
+ * <p>The RESTClient class provides the interface for performing different types
+ * of HTTP requests against a particular server. Instantiate a new RESTClient
  * object for each server you wish to communicate with.</p>
  * 
  * <p>Requests are performed in the background and responses are returned in a
@@ -65,12 +63,12 @@ import processing.core.*;
  * callback at the beginning of a frame, before your draw() function is called.
  * 
  * @example
- * import com.francisli.processing.http.*;
+ * import com.francisli.processing.restclient.*;
  * 
- * HttpClient client;
+ * RESTClient client;
  * 
  * void setup() {
- *   client = new HttpClient(this, "api.twitter.com");
+ *   client = new RESTClient(this, "api.twitter.com");
  *   client.GET("/1/statuses/public_timeline.json");
  * }
  * 
@@ -84,14 +82,14 @@ import processing.core.*;
  * 
  * @author Francis Li
  * @usage Application
- * @param client HttpClient: any variable of type HttpClient
+ * @param client RESTClient: any variable of type RESTClient
  */
-public class HttpClient {
+public class RESTClient {
    
     PApplet parent;
     Method callbackMethod;
         
-    DefaultHttpClient httpClient = new DefaultHttpClient(new ThreadSafeClientConnManager());
+    CloseableHttpClient httpClient = HttpClientBuilder.create().build();
     HashMap<HttpRequest, HttpResponse> requestMap = new HashMap<HttpRequest, HttpResponse>();
     
     HttpHost host, secureHost;
@@ -100,27 +98,16 @@ public class HttpClient {
     public boolean useSSL;
     /** boolean: set false to turn off logging information in the console */
     public boolean logging;
-    
-    /** boolean: set true to sign requests using OAuth */
-    public boolean useOAuth;
-    /** String: the OAuth consumer key assigned to you for your app */
-    public String oauthConsumerKey;
-    /** String: the OAuth consumer secret assigned to you for your app */
-    public String oauthConsumerSecret;    
-    /** String: the OAuth access token for a user of your app */
-    public String oauthAccessToken;
-    /** String: the OAuth access token secret for a user of your app*/
-    public String oauthAccessTokenSecret;
-    
-    public HttpClient(PApplet parent, String hostname) {
+
+    public RESTClient(PApplet parent, String hostname) {
         this(parent, hostname, 80, 443);
     }
         
-    public HttpClient(PApplet parent, String hostname, int port) {
+    public RESTClient(PApplet parent, String hostname, int port) {
         this(parent, hostname, port, 443);
     }
     
-    /** Returns a new HttpClient instance that connects to the specified 
+    /** Returns a new RESTClient instance that connects to the specified
      * host and ports.
      * 
      * @param parent PApplet: typically use "this"
@@ -128,14 +115,14 @@ public class HttpClient {
      * @param port int: the port to use for unsecured connections (typically 80)
      * @param securePort int: The port to use for secure connections (typically 443)
      */
-    public HttpClient(PApplet parent, String hostname, int port, int securePort) {
+    public RESTClient(PApplet parent, String hostname, int port, int securePort) {
         this.parent = parent;
-        parent.registerDispose(this);
-        parent.registerPre(this);
+        parent.registerMethod("dispose", this);
+        parent.registerMethod("pre", this);
         try {
             callbackMethod = parent.getClass().getMethod("responseReceived", new Class[] { HttpRequest.class, HttpResponse.class });
         } catch (Exception e) {
-            System.err.println("HttpClient: No responseReceived callback method found in your sketch!");
+            System.err.println("RESTClient: No responseReceived callback method found in your sketch!");
         }        
         host = new HttpHost(hostname, port, "http");
         secureHost = new HttpHost(hostname, securePort, "https");
@@ -146,7 +133,9 @@ public class HttpClient {
      * @exclude
      */
     public void dispose() {
-        httpClient.getConnectionManager().shutdown();
+        try {
+            httpClient.close();
+        } catch (IOException ioe) { }
     }
     
     /**
@@ -204,7 +193,7 @@ public class HttpClient {
                 Object value = params.get(key);
                 pairs.add(new BasicNameValuePair(key.toString(), value.toString()));
             }
-            String queryString = URLEncodedUtils.format(pairs, HTTP.UTF_8);
+            String queryString = URLEncodedUtils.format(pairs, Consts.UTF_8);
             if (path.contains("?")) {
                 path = path + "&" + queryString;
             } else {
@@ -213,15 +202,6 @@ public class HttpClient {
         }
         //// finally, invoke request
         HttpGet get = new HttpGet(getHost().toURI() + path);
-        if (useOAuth) {
-            OAuthConsumer consumer = new CommonsHttpOAuthConsumer(oauthConsumerKey, oauthConsumerSecret);
-            consumer.setTokenWithSecret(oauthAccessToken, oauthAccessTokenSecret);
-            try {
-                consumer.sign(get);
-            } catch (Exception e) {
-                System.err.println("HttpClient: Unable to sign GET request for OAuth");
-            }
-        }
         HttpRequest request = new HttpRequest(this, getHost(), get);
         request.start();
         return request;
@@ -250,61 +230,38 @@ public class HttpClient {
         }
         //// finally, invoke request
         HttpPost post = new HttpPost(getHost().toURI() + path);
-        MultipartEntity multipart = null;
+        MultipartEntityBuilder builder = null;
         //// if files passed, set up a multipart request
         if (files != null) {
-            multipart = new MultipartEntity();
-            post.setEntity(multipart);
+            builder = MultipartEntityBuilder.create();
             for (Object key: files.keySet()) {
                 Object value = files.get(key);
                 if (value instanceof byte[]) {
-                    multipart.addPart((String)key, new ByteArrayBody((byte[])value, "bytes.dat"));
+                    builder.addPart((String)key, new ByteArrayBody((byte[])value, "bytes.dat"));
                 } else if (value instanceof String) {
                     File file = new File((String) value);
                     if (!file.exists()) {
                         file = parent.sketchFile((String) value);
                     }
-                    multipart.addPart((String)key, new FileBody(file));
+                    builder.addPart((String)key, new FileBody(file));
                 }
             }
         }
         //// if params passed, format into a query string and append
         if (params != null) {
-            if (multipart == null) {
+            if (builder == null) {
                 ArrayList<BasicNameValuePair> pairs = new ArrayList<BasicNameValuePair>();
                 for (Object key: params.keySet()) {
                     Object value = params.get(key);
                     pairs.add(new BasicNameValuePair(key.toString(), value.toString()));
                 }
-                String queryString = URLEncodedUtils.format(pairs, HTTP.UTF_8);
-                if (path.contains("?")) {
-                    path = path + "&" + queryString;
-                } else {
-                    path = path + "?" + queryString;
-                }
-                try {
-                    post.setEntity(new UrlEncodedFormEntity(pairs, HTTP.UTF_8));
-                } catch (UnsupportedEncodingException ex) {
-                    System.err.println("HttpClient: Unable to set POST data from parameters");
-                }
+                post.setEntity(new UrlEncodedFormEntity(pairs, Consts.UTF_8));
             } else {
                 for (Object key: params.keySet()) {
                     Object value = params.get(key);
-                    try {
-                        multipart.addPart((String)key, new StringBody((String) value));
-                    } catch (UnsupportedEncodingException ex) {
-                        System.err.println("HttpClient: Unable to add " + key + ", " + value);
-                    }
+                    builder.addTextBody((String) key, (String) value);
                 }
-            }
-        }
-        if (useOAuth) {
-            OAuthConsumer consumer = new CommonsHttpOAuthConsumer(oauthConsumerKey, oauthConsumerSecret);
-            consumer.setTokenWithSecret(oauthAccessToken, oauthAccessTokenSecret);
-            try {
-                consumer.sign(post);
-            } catch (Exception e) {
-                System.err.println("HttpClient: Unable to sign POST request for OAuth");
+                post.setEntity(builder.build());
             }
         }
         HttpRequest request = new HttpRequest(this, getHost(), post);

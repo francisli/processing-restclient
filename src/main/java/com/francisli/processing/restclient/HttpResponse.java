@@ -13,20 +13,17 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA  02111-1307  USA
  */
-package com.francisli.processing.http;
+package com.francisli.processing.restclient;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.apache.http.Consts;
 import org.apache.http.HttpEntity;
 import org.apache.http.StatusLine;
-import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
-import org.stringtree.json.JSONReader;
-import processing.xml.XMLElement;
+import processing.data.JSONObject;
+import processing.data.XML;
 
 /** 
  * An HttpResponse object contains both status information and the content
@@ -34,7 +31,6 @@ import processing.xml.XMLElement;
  *
  * @author Francis Li <mail@francisli.com>
  * @usage Application
- * @param response HttpResponse: any variable of type HttpResponse
  */
 public class HttpResponse {
     org.apache.http.HttpResponse response;
@@ -67,7 +63,7 @@ public class HttpResponse {
         contentLength = content.length;
         contentCharSet = EntityUtils.getContentCharSet(entity);
         if (contentCharSet == null) {
-            contentCharSet = HTTP.UTF_8;
+            contentCharSet = Consts.UTF_8.toString();
         }
     }
     
@@ -90,16 +86,19 @@ public class HttpResponse {
      * @return JSONObject
      */
     public JSONObject getContentAsJSONObject() {
-        JSONReader json = new JSONReader();
-        return new JSONObject(json.read(getContentAsString()));
+        return JSONObject.parse(getContentAsString());
     }
     
     /** 
-     * Parses the data as an XML document and returns an XMLElement object.
+     * Parses the data as an XML document and returns an XML object.
      * 
-     * @return XMLElement
+     * @return XML
      */
-    public XMLElement getContentAsXMLElement() {
-        return XMLElement.parse(getContentAsString());
+    public XML getContentAsXML() {
+        try {
+            return XML.parse(getContentAsString());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
