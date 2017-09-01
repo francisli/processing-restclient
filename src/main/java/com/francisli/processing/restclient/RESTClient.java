@@ -18,14 +18,15 @@ package com.francisli.processing.restclient;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.http.Consts;
+import org.apache.http.Header;
 import org.apache.http.HttpHost;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
@@ -34,8 +35,8 @@ import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
 import org.apache.http.entity.mime.content.ByteArrayBody;
 import org.apache.http.entity.mime.content.FileBody;
 import processing.core.*;
@@ -90,14 +91,15 @@ public class RESTClient {
     Method callbackMethod;
         
     CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+    List<Header> headers = new ArrayList<Header>();
     HashMap<HttpRequest, HttpResponse> requestMap = new HashMap<HttpRequest, HttpResponse>();
     
     HttpHost host, secureHost;
-    
+
     /** boolean: set true to use SSL encryption */
     public boolean useSSL;
     /** boolean: set false to turn off logging information in the console */
-    public boolean logging;
+    public boolean logging = false;
 
     public RESTClient(PApplet parent, String hostname) {
         this(parent, hostname, 80, 443);
@@ -126,8 +128,25 @@ public class RESTClient {
         }        
         host = new HttpHost(hostname, port, "http");
         secureHost = new HttpHost(hostname, securePort, "https");
-        logging = true;
-    }    
+    }
+
+    /** Sets a new HTTP header that will be applied to every outgoing request.
+     *
+     * @param key
+     * @param value
+     */
+    public void setHeader(String key, String value) {
+        headers.add(new BasicHeader(key, value));
+        httpClient = HttpClientBuilder.create().setDefaultHeaders(headers).build();
+    }
+
+    /** Sets the HTTP Authorization header with a Bearer token value. Typically used with an OAuth2 API access token.
+     *
+     * @param token
+     */
+    public void setBearerAuthorizationHeader(String token) {
+        setHeader("Authorization", "Bearer " + token);
+    }
 
     /**
      * @exclude
