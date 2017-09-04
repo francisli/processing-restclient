@@ -1,13 +1,13 @@
 /**
  * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public 
+ * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation, version 3.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General
  * Public License along with this library; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
@@ -28,7 +28,7 @@ import org.apache.http.util.EntityUtils;
 import processing.data.JSONObject;
 import processing.data.XML;
 
-/** 
+/**
  * An HttpResponse object contains both status information and the content
  * of the response to an HTTP request.
  *
@@ -42,21 +42,19 @@ public class HttpResponse {
     /** int: the HTTP status code of this response */
     public int statusCode;
     /** String: a short descriptive message for the current status */
-    public String statusMessage;    
+    public String statusMessage;
     /** String: the MIME type of the content, including optional character set */
     public String contentType;
     /** int: the length of the content data */
     public long contentLength;
 
-
-
     HttpResponse(org.apache.http.HttpResponse response) throws IOException {
         this.response = response;
-        
+
         StatusLine status = response.getStatusLine();
         this.statusCode = status.getStatusCode();
         this.statusMessage = status.getReasonPhrase();
-        
+
         entity = response.getEntity();
         Header contentType = entity.getContentType();
         if (contentType != null) {
@@ -65,6 +63,11 @@ public class HttpResponse {
         contentLength = entity.getContentLength();
     }
 
+    /** Returns an HTTP header value by key name.
+     *
+     * @param name String: the name of the header you wish to retreive
+     * @return String
+     */
     public String getHeader(String name) {
         String value = null;
         Header header = response.getFirstHeader(name);
@@ -74,6 +77,12 @@ public class HttpResponse {
         return value;
     }
 
+    /** Returns an array of HTTP header values by key name. Use this if you
+     * expect to have multiple headers with the same key name in the response.
+     *
+     * @param name String: the name of the headers you wish to retreive
+     * @return String[]
+     */
     public String[] getHeaders(String name) {
         Header[] headers = response.getHeaders(name);
         String[] values = new String[headers.length];
@@ -99,21 +108,37 @@ public class HttpResponse {
         }
     }
 
+    /** Returns the URL in the request header for the next page of results,
+     * if the server supports RFC 5988 standard Link headers.
+     * @return String
+     */
     public String getNextHeaderLink() {
         parseLinkHeader();
         return links.get("next");
     }
 
+    /** Returns the URL in the request header for the previous page of results,
+     * if the server supports RFC 5988 standard Link headers.
+     * @return String
+     */
     public String getPrevHeaderLink() {
         parseLinkHeader();
         return links.get("prev");
     }
 
+    /** Returns the URL in the request header for the first page of results,
+     * if the server supports RFC 5988 standard Link headers.
+     * @return String
+     */
     public String getFirstHeaderLink() {
         parseLinkHeader();
         return links.get("first");
     }
 
+    /** Returns the URL in the request header for the last page of results,
+     * if the server supports RFC 5988 standard Link headers.
+     * @return String
+     */
     public String getLastHeaderLink() {
         parseLinkHeader();
         return links.get("last");
@@ -131,9 +156,9 @@ public class HttpResponse {
         }
     }
 
-    /** 
-     * Converts the content into a String.
-     * 
+    /**
+     * Converts and returns the response content as a String.
+     *
      * @return String
      */
     public String getContentAsString() {
@@ -143,19 +168,19 @@ public class HttpResponse {
             throw new RuntimeException(e);
         }
     }
-    
-    /** 
+
+    /**
      * Parses the data as a JSON document and returns it as a JSONObject.
-     * 
+     *
      * @return JSONObject
      */
     public JSONObject getContentAsJSONObject() {
         return JSONObject.parse(getContentAsString());
     }
-    
-    /** 
+
+    /**
      * Parses the data as an XML document and returns an XML object.
-     * 
+     *
      * @return XML
      */
     public XML getContentAsXML() {

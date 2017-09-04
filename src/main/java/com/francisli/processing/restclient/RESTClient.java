@@ -211,7 +211,7 @@ public class RESTClient {
      * the specified parameters. The parameters are assembled into a query
      * string and appended to the path.
      *
-     * @param params String: a collection of parameters to pass as a query string with the path
+     * @param params HashMap: a collection of key/value pairs
      */
     public HttpRequest GET(String path, Map params) {
         //// clean up path a little bit- remove whitespace, add slash prefix
@@ -254,7 +254,7 @@ public class RESTClient {
      * in the same way a web browser submits a form.
      *
      * @param path String: an absolute path to a file or script on the server
-     * @param params HashMap: a collection of parameters to send to the server
+     * @param params HashMap: a collection of key/value parameters to send to the server
      * @return HttpRequest
      */
     public HttpRequest POST(String path, Map params) {
@@ -262,7 +262,7 @@ public class RESTClient {
     }
 
     /**
-     * @param files HashMap: a collection of files to send to the server
+     * @param files HashMap: a collection of key/file pairs to send to the server
      */
     public HttpRequest POST(String path, Map params, Map files) {
         //// clean up path a little bit- remove whitespace, add slash prefix
