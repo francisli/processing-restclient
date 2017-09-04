@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
     <head>
-        <title>HttpClient / HTTP</title>
+        <title>RESTClient / RESTClient</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta name="Author" content="Francis Li" />
               <link href="style.css" rel="stylesheet" type="text/css" />
@@ -29,19 +29,20 @@
                 <table cellpadding="0" cellspacing="0" border="0" class="ref-item">
                     <tr class="name-row">
                         <th scope="row"><!--*-->Name<!--*--></th>
-                        <td><h3>HttpClient</h3></td>
+                        <td><h3>RESTClient</h3></td>
                     </tr>
 
                     <tr class="">
                         <th scope="row"><!--*-->Examples<!--*--></th>
                         <td>
-                            <div class="example"><pre>import com.francisli.processing.http.*;
+                            <div class="example"><pre>import com.francisli.processing.restclient.*;
 
-HttpClient client;
+RESTClient client;
 
 void setup() {
-  client = new HttpClient(this, "api.twitter.com");
-  client.GET("/1/statuses/public_timeline.json");
+  client = new RESTClient(this, "www.googleapis.com");
+  client.useSSL = true;
+  client.GET("/books/v1/volumes?q=isbn:0747532699");
 }
 
 void responseReceived(HttpRequest request, HttpResponse response) {
@@ -49,28 +50,28 @@ void responseReceived(HttpRequest request, HttpResponse response) {
 }
 
 void draw() {
-  
+
 }</pre></div>
                         </td>
                     </tr>
 
                     <tr class="">
                         <th scope="row"><!--*-->Description<!--*--></th>
-                        <td><p>The HttpClient class provides the interface for performing different types
- of HTTP requests against a particular server. Instantiate a new HttpClient
+                        <td><p>The RESTClient class provides the interface for performing different types
+ of HTTP requests against a particular server. Instantiate a new RESTClient
  object for each server you wish to communicate with.</p>
- 
+
  <p>Requests are performed in the background and responses are returned in a
  callback function with the following signature:</p>
- 
+
  <pre>
  void responseReceived(HttpRequest request, HttpResponse response) {
- 
+
  }
  </pre>
- 
+
  <p>Because requests are performed in the background, it is important that
- you have a draw() function defined (even if it is empty, as shown in the 
+ you have a draw() function defined (even if it is empty, as shown in the
  example above) and the animation loop is running.  Without a draw() function,
  Processing will terminate the sketch after setup(), which will shutdown
  all connections.  If the animation loop is not running, you will never get
@@ -82,31 +83,31 @@ void draw() {
                         <th scope="row">Fields</th>
                         <td><table cellpadding="0" cellspacing="0" border="0">
                                 <tr class="">
-                                    <th scope="row"><a href="HttpClient_useSSL.html">useSSL</a></th>
+                                    <th scope="row"><a href="RESTClient_useSSL.html">useSSL</a></th>
                                     <td>boolean: set true to use SSL encryption</td>
                                 </tr>
                                 <tr class="">
-                                    <th scope="row"><a href="HttpClient_logging.html">logging</a></th>
+                                    <th scope="row"><a href="RESTClient_logging.html">logging</a></th>
                                     <td>boolean: set false to turn off logging information in the console</td>
                                 </tr>
                                 <tr class="">
-                                    <th scope="row"><a href="HttpClient_useOAuth.html">useOAuth</a></th>
+                                    <th scope="row"><a href="RESTClient_useOAuth.html">useOAuth</a></th>
                                     <td>boolean: set true to sign requests using OAuth</td>
                                 </tr>
                                 <tr class="">
-                                    <th scope="row"><a href="HttpClient_oauthConsumerKey.html">oauthConsumerKey</a></th>
+                                    <th scope="row"><a href="RESTClient_oauthConsumerKey.html">oauthConsumerKey</a></th>
                                     <td>String: the OAuth consumer key assigned to you for your app</td>
                                 </tr>
                                 <tr class="">
-                                    <th scope="row"><a href="HttpClient_oauthConsumerSecret.html">oauthConsumerSecret</a></th>
+                                    <th scope="row"><a href="RESTClient_oauthConsumerSecret.html">oauthConsumerSecret</a></th>
                                     <td>String: the OAuth consumer secret assigned to you for your app</td>
                                 </tr>
                                 <tr class="">
-                                    <th scope="row"><a href="HttpClient_oauthAccessToken.html">oauthAccessToken</a></th>
+                                    <th scope="row"><a href="RESTClient_oauthAccessToken.html">oauthAccessToken</a></th>
                                     <td>String: the OAuth access token for a user of your app</td>
                                 </tr>
                                 <tr class="">
-                                    <th scope="row"><a href="HttpClient_oauthAccessTokenSecret.html">oauthAccessTokenSecret</a></th>
+                                    <th scope="row"><a href="RESTClient_oauthAccessTokenSecret.html">oauthAccessTokenSecret</a></th>
                                     <td>String: the OAuth access token secret for a user of your app</td>
                                 </tr>
                             </table></td>
@@ -116,22 +117,30 @@ void draw() {
                         <th scope="row"><!--*-->Methods<!--*--></th>
                         <td><table cellpadding="0" cellspacing="0" border="0">
                                 <tr class="">
-                                    <th scope="row"><a href="HttpClient_GET_.html">GET()</a></th>
+                                    <th scope="row"><a href="RESTClient_GET_.html">GET()</a></th>
                                     <td>Performs a GET request to fetch content from the specified path.</td>
                                 </tr>
                                 <tr class="">
-                                    <th scope="row"><a href="HttpClient_POST_.html">POST()</a></th>
-                                    <td>Performs a POST request, sending the specified parameters as data 
+                                    <th scope="row"><a href="RESTClient_POST_.html">POST()</a></th>
+                                    <td>Performs a POST request, sending the specified parameters as data
  in the same way a web browser submits a form.</td>
+                                </tr>
+                                <tr class="">
+                                    <th scope="row"><a href="RESTClient_setBearerAuthorizationHeader_.html">setBearerAuthorizationHeader()</a></th>
+                                    <td>Sets the HTTP Authorization header with a Bearer token value.</td>
+                                </tr>
+                                <tr class="">
+                                    <th scope="row"><a href="RESTClient_setHeader_.html">setHeader()</a></th>
+                                    <td>Sets a new HTTP header that will be applied to every outgoing request.</td>
                                 </tr>
                             </table></td>
                     </tr>
 
                     <tr class="">
                         <th scope="row"><!--*-->Constructor<!--*--></th>
-                        <td><pre>HttpClient(<kbd>parent</kbd>, <kbd>hostname</kbd>)
-HttpClient(<kbd>parent</kbd>, <kbd>hostname</kbd>, <kbd>port</kbd>)
-HttpClient(<kbd>parent</kbd>, <kbd>hostname</kbd>, <kbd>port</kbd>, <kbd>securePort</kbd>)
+                        <td><pre>RESTClient(<kbd>parent</kbd>, <kbd>hostname</kbd>)
+RESTClient(<kbd>parent</kbd>, <kbd>hostname</kbd>, <kbd>port</kbd>)
+RESTClient(<kbd>parent</kbd>, <kbd>hostname</kbd>, <kbd>port</kbd>, <kbd>securePort</kbd>)
 </pre></td>
                     </tr>
 
@@ -163,7 +172,7 @@ HttpClient(<kbd>parent</kbd>, <kbd>hostname</kbd>, <kbd>port</kbd>, <kbd>secureP
                     </tr>
                 </table>
 
-                Updated on Sat Oct 22 22:20:37 PDT 2011<br /><br />
+                Updated on Sun Sep 03 20:09:38 PDT 2017<br /><br />
 
                 <!-- Creative Commons License -->
 

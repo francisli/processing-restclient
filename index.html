@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
     <head>
-        <title>HTTP</title>
+        <title>RESTClient</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta name="Author" content="Francis Li" />
         <link href="style.css" rel="stylesheet" type="text/css" />
@@ -21,31 +21,28 @@
             <!-- ==================================== CONTENT - Headers ============================ -->
             <div class="content">
 
-                <div class="librarytitle"><h3>HTTP</h3></div>
+                <div class="librarytitle"><h3>RESTClient</h3></div>
 
                 <div class="colone-alt">
-                    <p>This Processing HTTP library makes it easy to communicate with servers on 
- the Internet using the HTTP protocol- the same communications protocol used 
- by web browsers like Internet Explorer, Firefox, Safari, and Chrome to surf 
- the web.</p>
- <p>In addition to serving web pages, HTTP is also used to provide 
- direct access to data from a service provider through what is commonly 
- called a "web services" API.</p>
- <p>To get started, refer to the HttpClient documentation.</p>
- <p><a href="https://github.com/downloads/francisli/processing-http/http.zip">Download now from Github (http.zip)</a></p>
+                    <p>This Processing REST Client library can be used to communicate with servers that expose REST (REpresentational
+ State Transfer) style APIs (Application Programming Interfaces) over the HTTP protocol.</p>
+ <p>To get started, refer to the RestClient documentation.</p>
+ <p><a href="https://github.com/downloads/francisli/processing-http/http.zip">Download now from Github (restclient.zip)</a></p>
  <p><a href="https://github.com/francisli/processing-http/wiki">See (and contribute!) examples on the wiki</a></p>
                 </div>
 
                 <div class="twocol-alt">
                     <p>
-                        <h5>HttpClient Class</h5>
-                        <p><p>The HttpClient class provides the interface for performing different types
+                        <h5>RESTClient Class</h5>
+                        <p><p>The RESTClient class provides the interface for performing different types
  of HTTP requests against a particular server.
                             <br />
                             <br />
-                            <a href="HttpClient.html">HttpClient</a><br />
-                            <a href="HttpClient_GET_.html">GET()</a><br />
-                            <a href="HttpClient_POST_.html">POST()</a><br />
+                            <a href="RESTClient.html">RESTClient</a><br />
+                            <a href="RESTClient_GET_.html">GET()</a><br />
+                            <a href="RESTClient_POST_.html">POST()</a><br />
+                            <a href="RESTClient_setBearerAuthorizationHeader_.html">setBearerAuthorizationHeader()</a><br />
+                            <a href="RESTClient_setHeader_.html">setHeader()</a><br />
                         </p>
                         <h5>HttpRequest Class</h5>
                         <p><p>An HttpRequest object represents a single HTTP request to a server.
@@ -59,37 +56,22 @@
                             <br />
                             <br />
                             <a href="HttpResponse.html">HttpResponse</a><br />
+                            <a href="HttpResponse_getContent_.html">getContent()</a><br />
                             <a href="HttpResponse_getContentAsJSONObject_.html">getContentAsJSONObject()</a><br />
                             <a href="HttpResponse_getContentAsString_.html">getContentAsString()</a><br />
-                            <a href="HttpResponse_getContentAsXMLElement_.html">getContentAsXMLElement()</a><br />
-                        </p>
-                        <h5>JSONObject Class</h5>
-                        <p>A JSONObject represents some data from a JSON response.
-                            <br />
-                            <br />
-                            <a href="JSONObject.html">JSONObject</a><br />
-                            <a href="JSONObject_booleanValue_.html">booleanValue()</a><br />
-                            <a href="JSONObject_doubleValue_.html">doubleValue()</a><br />
-                            <a href="JSONObject_floatValue_.html">floatValue()</a><br />
-                            <a href="JSONObject_get_.html">get()</a><br />
-                            <a href="JSONObject_intValue_.html">intValue()</a><br />
-                            <a href="JSONObject_isBoolean_.html">isBoolean()</a><br />
-                            <a href="JSONObject_isFloatingPoint_.html">isFloatingPoint()</a><br />
-                            <a href="JSONObject_isInteger_.html">isInteger()</a><br />
-                            <a href="JSONObject_isList_.html">isList()</a><br />
-                            <a href="JSONObject_isMap_.html">isMap()</a><br />
-                            <a href="JSONObject_isNull_.html">isNull()</a><br />
-                            <a href="JSONObject_isString_.html">isString()</a><br />
-                            <a href="JSONObject_longValue_.html">longValue()</a><br />
-                            <a href="JSONObject_size_.html">size()</a><br />
-                            <a href="JSONObject_stringValue_.html">stringValue()</a><br />
-                            <a href="JSONObject_toString_.html">toString()</a><br />
+                            <a href="HttpResponse_getContentAsXML_.html">getContentAsXML()</a><br />
+                            <a href="HttpResponse_getFirstHeaderLink_.html">getFirstHeaderLink()</a><br />
+                            <a href="HttpResponse_getHeader_.html">getHeader()</a><br />
+                            <a href="HttpResponse_getHeaders_.html">getHeaders()</a><br />
+                            <a href="HttpResponse_getLastHeaderLink_.html">getLastHeaderLink()</a><br />
+                            <a href="HttpResponse_getNextHeaderLink_.html">getNextHeaderLink()</a><br />
+                            <a href="HttpResponse_getPrevHeaderLink_.html">getPrevHeaderLink()</a><br />
                         </p>
                     </p>
                 </div>
 
 
-                Updated on Sat Oct 22 22:20:37 PDT 2011<br /><br />
+                Updated on Sun Sep 03 20:09:38 PDT 2017<br /><br />
 
                 <!-- Creative Commons License -->
 

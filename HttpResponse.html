@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
     <head>
-        <title>HttpResponse / HTTP</title>
+        <title>HttpResponse / RESTClient</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta name="Author" content="Francis Li <mail@francisli.com>" />
               <link href="style.css" rel="stylesheet" type="text/css" />
@@ -55,12 +55,8 @@
                                     <td>String: the MIME type of the content, including optional character set</td>
                                 </tr>
                                 <tr class="">
-                                    <th scope="row"><a href="HttpResponse_content.html">content</a></th>
-                                    <td>byte[]: the raw data content of the response</td>
-                                </tr>
-                                <tr class="">
                                     <th scope="row"><a href="HttpResponse_contentLength.html">contentLength</a></th>
-                                    <td>int: the length of the content data, the same as content.length</td>
+                                    <td>int: the length of the content data</td>
                                 </tr>
                             </table></td>
                     </tr>
@@ -69,16 +65,48 @@
                         <th scope="row"><!--*-->Methods<!--*--></th>
                         <td><table cellpadding="0" cellspacing="0" border="0">
                                 <tr class="">
+                                    <th scope="row"><a href="HttpResponse_getContent_.html">getContent()</a></th>
+                                    <td>Returns the underlying InputStream for the data returned in this response</td>
+                                </tr>
+                                <tr class="">
                                     <th scope="row"><a href="HttpResponse_getContentAsJSONObject_.html">getContentAsJSONObject()</a></th>
                                     <td>Parses the data as a JSON document and returns it as a JSONObject.</td>
                                 </tr>
                                 <tr class="">
                                     <th scope="row"><a href="HttpResponse_getContentAsString_.html">getContentAsString()</a></th>
-                                    <td>Converts the content into a String.</td>
+                                    <td>Converts and returns the response content as a String.</td>
                                 </tr>
                                 <tr class="">
-                                    <th scope="row"><a href="HttpResponse_getContentAsXMLElement_.html">getContentAsXMLElement()</a></th>
-                                    <td>Parses the data as an XML document and returns an XMLElement object.</td>
+                                    <th scope="row"><a href="HttpResponse_getContentAsXML_.html">getContentAsXML()</a></th>
+                                    <td>Parses the data as an XML document and returns an XML object.</td>
+                                </tr>
+                                <tr class="">
+                                    <th scope="row"><a href="HttpResponse_getFirstHeaderLink_.html">getFirstHeaderLink()</a></th>
+                                    <td>Returns the URL in the request header for the first page of results,
+ if the server supports RFC 5988 standard Link headers.</td>
+                                </tr>
+                                <tr class="">
+                                    <th scope="row"><a href="HttpResponse_getHeader_.html">getHeader()</a></th>
+                                    <td>Returns an HTTP header value by key name.</td>
+                                </tr>
+                                <tr class="">
+                                    <th scope="row"><a href="HttpResponse_getHeaders_.html">getHeaders()</a></th>
+                                    <td>Returns an array of HTTP header values by key name.</td>
+                                </tr>
+                                <tr class="">
+                                    <th scope="row"><a href="HttpResponse_getLastHeaderLink_.html">getLastHeaderLink()</a></th>
+                                    <td>Returns the URL in the request header for the last page of results,
+ if the server supports RFC 5988 standard Link headers.</td>
+                                </tr>
+                                <tr class="">
+                                    <th scope="row"><a href="HttpResponse_getNextHeaderLink_.html">getNextHeaderLink()</a></th>
+                                    <td>Returns the URL in the request header for the next page of results,
+ if the server supports RFC 5988 standard Link headers.</td>
+                                </tr>
+                                <tr class="">
+                                    <th scope="row"><a href="HttpResponse_getPrevHeaderLink_.html">getPrevHeaderLink()</a></th>
+                                    <td>Returns the URL in the request header for the previous page of results,
+ if the server supports RFC 5988 standard Link headers.</td>
                                 </tr>
                             </table></td>
                     </tr>
@@ -91,7 +119,7 @@
                     </tr>
                 </table>
 
-                Updated on Sat Oct 22 22:20:37 PDT 2011<br /><br />
+                Updated on Sun Sep 03 20:09:38 PDT 2017<br /><br />
 
                 <!-- Creative Commons License -->
 

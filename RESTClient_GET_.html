@@ -1,9 +1,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
     <head>
-        <title>isString / JSONObject / HTTP</title>
+        <title>GET / RESTClient / RESTClient</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <meta name="Author" content="Francis Li <mail@francisli.com>" />
+        <meta name="Author" content="Francis Li" />
         <link href="style.css" rel="stylesheet" type="text/css" />
     </head>
     <body id="Library-ref" onload="" >
@@ -28,23 +28,24 @@
                 <table cellpadding="0" cellspacing="0" border="0" class="ref-item">
                     <tr class="">
                         <th scope="row">Class</th>
-                        <td><p><a href="JSONObject.html">JSONObject</a></p></td>
+                        <td><p><a href="RESTClient.html">RESTClient</a></p></td>
                     </tr>
                     
                     <tr class="name-row">
                         <th scope="row"><!--*-->Name<!--*--></th>
-                        <td><h3>isString</h3></td>
+                        <td><h3>GET</h3></td>
                     </tr>
 
 
                     <tr class="">
                         <th scope="row"><!--*-->Description<!--*--></th>
-                        <td>Returns true if this JSONObject represents a String, false otherwise.</td>
+                        <td>Performs a GET request to fetch content from the specified path.</td>
                     </tr>
 
                     <tr class="">
                         <th scope="row"><!--*-->Syntax<!--*--></th>
-                        <td><pre><kbd>jsonObject</kbd>.isString()
+                        <td><pre><kbd>client</kbd>.GET(path)
+<kbd>client</kbd>.GET(path, params)
 </pre></td>
                     </tr>
 
@@ -52,15 +53,23 @@
                         <th scope="row"><!--*-->Parameters<!--*--></th>
                         <td><table cellpadding="0" cellspacing="0" border="0">
                                 <tr class="">
-                                    <th scope="row">jsonObject</th>
-                                    <td>JSONObject: any variable of type JSONObject</td>
+                                    <th scope="row">client</th>
+                                    <td>RESTClient: any variable of type RESTClient</td>
+                                </tr>
+                                <tr class="">
+                                    <th scope="row">path</th>
+                                    <td>String: an absolute path to file or script on the server</td>
+                                </tr>
+                                <tr class="">
+                                    <th scope="row">params</th>
+                                    <td>HashMap: a collection of key/value pairs</td>
                                 </tr>
                             </table></td>
                     </tr>
                     
                     <tr class="">
                         <th scope="row"><!--*-->Returns<!--*--></th>
-                        <td>boolean</td>
+                        <td>HttpRequest</td>
                     </tr>
 
                     <tr class="">
@@ -69,7 +78,7 @@
                     </tr>
                 </table>
 
-                Updated on Sat Oct 22 22:20:37 PDT 2011<br /><br />
+                Updated on Sun Sep 03 20:09:38 PDT 2017<br /><br />
 
                 <!-- Creative Commons License -->
 
