@@ -71,8 +71,9 @@ import processing.core.*;
  * RESTClient client;
  *
  * void setup() {
- *   client = new RESTClient(this, "api.twitter.com");
- *   client.GET("/1/statuses/public_timeline.json");
+ *   client = new RESTClient(this, "www.googleapis.com");
+ *   client.useSSL = true;
+ *   client.GET("/books/v1/volumes?q=isbn:0747532699");
  * }
  *
  * void responseReceived(HttpRequest request, HttpResponse response) {
