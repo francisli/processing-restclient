@@ -289,7 +289,6 @@ public class RESTClient {
                 }
             }
         }
-        //// if params passed, format into a query string and append
         if (params != null) {
             if (builder == null) {
                 ArrayList<BasicNameValuePair> pairs = new ArrayList<BasicNameValuePair>();
@@ -303,8 +302,10 @@ public class RESTClient {
                     Object value = params.get(key);
                     builder.addTextBody((String) key, (String) value);
                 }
-                post.setEntity(builder.build());
             }
+        }
+        if (builder != null) {
+          post.setEntity(builder.build());
         }
         if (useOAuth) {
             OAuthConsumer consumer = new CommonsHttpOAuthConsumer(oauthConsumerKey, oauthConsumerSecret);
