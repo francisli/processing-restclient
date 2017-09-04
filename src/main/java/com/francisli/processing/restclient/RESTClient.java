@@ -1,18 +1,18 @@
 /**
  * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public 
+ * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation, version 3.</p>
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.</p>
- * 
+ *
  * You should have received a copy of the GNU Lesser General
  * Public License along with this library; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA  02111-1307  USA
- * 
+ *
  */
 package com.francisli.processing.restclient;
 
@@ -39,61 +39,63 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.entity.mime.content.ByteArrayBody;
 import org.apache.http.entity.mime.content.FileBody;
+import oauth.signpost.OAuthConsumer;
+import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
 import processing.core.*;
 
-/** 
+/**
  * <p>The RESTClient class provides the interface for performing different types
  * of HTTP requests against a particular server. Instantiate a new RESTClient
  * object for each server you wish to communicate with.</p>
- * 
+ *
  * <p>Requests are performed in the background and responses are returned in a
  * callback function with the following signature:</p>
- * 
+ *
  * <pre>
  * void responseReceived(HttpRequest request, HttpResponse response) {
- * 
+ *
  * }
  * </pre>
- * 
+ *
  * <p>Because requests are performed in the background, it is important that
- * you have a draw() function defined (even if it is empty, as shown in the 
+ * you have a draw() function defined (even if it is empty, as shown in the
  * example above) and the animation loop is running.  Without a draw() function,
  * Processing will terminate the sketch after setup(), which will shutdown
  * all connections.  If the animation loop is not running, you will never get
  * a responseReceived() callback.  The library will invoke your responseReceived()
  * callback at the beginning of a frame, before your draw() function is called.
- * 
+ *
  * @example
  * import com.francisli.processing.restclient.*;
- * 
+ *
  * RESTClient client;
- * 
+ *
  * void setup() {
  *   client = new RESTClient(this, "api.twitter.com");
  *   client.GET("/1/statuses/public_timeline.json");
  * }
- * 
+ *
  * void responseReceived(HttpRequest request, HttpResponse response) {
  *   println(response.getContentAsString());
  * }
- * 
+ *
  * void draw() {
- *   
+ *
  * }
- * 
+ *
  * @author Francis Li
  * @usage Application
  * @param client RESTClient: any variable of type RESTClient
  */
 public class RESTClient {
-   
+
     PApplet parent;
     Method callbackMethod;
-        
+
     CloseableHttpClient httpClient = HttpClientBuilder.create().build();
     List<Header> headers = new ArrayList<Header>();
     HashMap<HttpRequest, HttpResponse> requestMap = new HashMap<HttpRequest, HttpResponse>();
-    
+
     HttpHost host, secureHost;
 
     /** boolean: set true to use SSL encryption */
@@ -101,17 +103,28 @@ public class RESTClient {
     /** boolean: set false to turn off logging information in the console */
     public boolean logging = false;
 
+    /** boolean: set true to sign requests using OAuth */
+    public boolean useOAuth;
+    /** String: the OAuth consumer key assigned to you for your app */
+    public String oauthConsumerKey;
+    /** String: the OAuth consumer secret assigned to you for your app */
+    public String oauthConsumerSecret;
+    /** String: the OAuth access token for a user of your app */
+    public String oauthAccessToken;
+    /** String: the OAuth access token secret for a user of your app*/
+    public String oauthAccessTokenSecret;
+
     public RESTClient(PApplet parent, String hostname) {
         this(parent, hostname, 80, 443);
     }
-        
+
     public RESTClient(PApplet parent, String hostname, int port) {
         this(parent, hostname, port, 443);
     }
-    
+
     /** Returns a new RESTClient instance that connects to the specified
      * host and ports.
-     * 
+     *
      * @param parent PApplet: typically use "this"
      * @param hostname String: the domain name or IP address of the host
      * @param port int: the port to use for unsecured connections (typically 80)
@@ -125,7 +138,7 @@ public class RESTClient {
             callbackMethod = parent.getClass().getMethod("responseReceived", new Class[] { HttpRequest.class, HttpResponse.class });
         } catch (Exception e) {
             System.err.println("RESTClient: No responseReceived callback method found in your sketch!");
-        }        
+        }
         host = new HttpHost(hostname, port, "http");
         secureHost = new HttpHost(hostname, securePort, "https");
     }
@@ -156,7 +169,7 @@ public class RESTClient {
             httpClient.close();
         } catch (IOException ioe) { }
     }
-    
+
     /**
      * @exclude
      */
@@ -181,22 +194,22 @@ public class RESTClient {
             }
         }
     }
-        
-    /** 
+
+    /**
      * Performs a GET request to fetch content from the specified path.
-     * 
+     *
      * @param path String: an absolute path to file or script on the server
      * @return HttpRequest
      */
     public HttpRequest GET(String path) {
         return GET(path, null);
     }
-    
-    /** 
+
+    /**
      * Performs a GET request to fetch content from the specified path with
      * the specified parameters. The parameters are assembled into a query
      * string and appended to the path.
-     * 
+     *
      * @param params String: a collection of parameters to pass as a query string with the path
      */
     public HttpRequest GET(String path, Map params) {
@@ -221,15 +234,24 @@ public class RESTClient {
         }
         //// finally, invoke request
         HttpGet get = new HttpGet(getHost().toURI() + path);
+        if (useOAuth) {
+            OAuthConsumer consumer = new CommonsHttpOAuthConsumer(oauthConsumerKey, oauthConsumerSecret);
+            consumer.setTokenWithSecret(oauthAccessToken, oauthAccessTokenSecret);
+            try {
+                consumer.sign(get);
+            } catch (Exception e) {
+                System.err.println("HttpClient: Unable to sign GET request for OAuth");
+            }
+        }
         HttpRequest request = new HttpRequest(this, getHost(), get);
         request.start();
         return request;
     }
-    
+
     /**
-     * Performs a POST request, sending the specified parameters as data 
+     * Performs a POST request, sending the specified parameters as data
      * in the same way a web browser submits a form.
-     * 
+     *
      * @param path String: an absolute path to a file or script on the server
      * @param params HashMap: a collection of parameters to send to the server
      * @return HttpRequest
@@ -237,7 +259,7 @@ public class RESTClient {
     public HttpRequest POST(String path, Map params) {
         return POST(path, params, null);
     }
-    
+
     /**
      * @param files HashMap: a collection of files to send to the server
      */
@@ -283,21 +305,30 @@ public class RESTClient {
                 post.setEntity(builder.build());
             }
         }
+        if (useOAuth) {
+            OAuthConsumer consumer = new CommonsHttpOAuthConsumer(oauthConsumerKey, oauthConsumerSecret);
+            consumer.setTokenWithSecret(oauthAccessToken, oauthAccessTokenSecret);
+            try {
+                consumer.sign(post);
+            } catch (Exception e) {
+                System.err.println("HttpClient: Unable to sign POST request for OAuth");
+            }
+        }
         HttpRequest request = new HttpRequest(this, getHost(), post);
         request.start();
         return request;
     }
-    
+
     HttpHost getHost() {
         return useSSL ? secureHost : host;
     }
-    
+
     void put(HttpRequest request, HttpResponse response) {
         synchronized(this) {
             requestMap.put(request, response);
         }
     }
-    
+
     HttpResponse get(HttpRequest request) {
         synchronized(this) {
             return requestMap.get(request);
