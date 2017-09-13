@@ -16,7 +16,6 @@
  */
 package com.francisli.processing.restclient;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -28,17 +27,13 @@ import java.util.Map;
 import org.apache.http.Consts;
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.entity.mime.content.ByteArrayBody;
-import org.apache.http.entity.mime.content.FileBody;
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
 import processing.core.*;
@@ -89,7 +84,6 @@ import processing.core.*;
  * @param client RESTClient: any variable of type RESTClient
  */
 public class RESTClient {
-
     PApplet parent;
     Method callbackMethod;
 
@@ -138,7 +132,9 @@ public class RESTClient {
         try {
             callbackMethod = parent.getClass().getMethod("responseReceived", new Class[] { HttpRequest.class, HttpResponse.class });
         } catch (Exception e) {
-            System.err.println("RESTClient: No responseReceived callback method found in your sketch!");
+            if (logging) {
+              System.err.println("RESTClient: No responseReceived callback method found in your sketch!");
+            }
         }
         host = new HttpHost(hostname, port, "http");
         secureHost = new HttpHost(hostname, securePort, "https");
@@ -181,14 +177,17 @@ public class RESTClient {
         }
         for (HttpRequest request: requestMapClone.keySet()) {
             HttpResponse response = requestMapClone.get(request);
-            try {
-                callbackMethod.invoke(parent, new Object[] { request, response });
-            } catch (IllegalAccessException ex) {
+            request.pre(response);
+            if (callbackMethod != null) {
+              try {
+                  callbackMethod.invoke(parent, new Object[] { request, response });
+              } catch (IllegalAccessException ex) {
 
-            } catch (IllegalArgumentException ex) {
+              } catch (IllegalArgumentException ex) {
 
-            } catch (InvocationTargetException ex) {
-                throw ex.getCause();
+              } catch (InvocationTargetException ex) {
+                  throw ex.getCause();
+              }
             }
             synchronized(this) {
                 requestMap.remove(request);
@@ -214,48 +213,45 @@ public class RESTClient {
      * @param params HashMap: a collection of key/value pairs
      */
     public HttpRequest GET(String path, Map params) {
-        //// clean up path a little bit- remove whitespace, add slash prefix
-        path = path.trim();
-        if (!path.startsWith("/")) {
-            path = "/" + path;
-        }
-        //// if params passed, format into a query string and append
-        if (params != null) {
-            ArrayList<BasicNameValuePair> pairs = new ArrayList<BasicNameValuePair>();
-            for (Object key: params.keySet()) {
-                Object value = params.get(key);
-                pairs.add(new BasicNameValuePair(key.toString(), value.toString()));
-            }
-            String queryString = URLEncodedUtils.format(pairs, Consts.UTF_8);
-            if (path.contains("?")) {
-                path = path + "&" + queryString;
-            } else {
-                path = path + "?" + queryString;
-            }
-        }
-        //// finally, invoke request
-        HttpGet get = new HttpGet(getHost().toURI() + path);
-        if (useOAuth) {
-            OAuthConsumer consumer = new CommonsHttpOAuthConsumer(oauthConsumerKey, oauthConsumerSecret);
-            consumer.setTokenWithSecret(oauthAccessToken, oauthAccessTokenSecret);
-            try {
-                consumer.sign(get);
-            } catch (Exception e) {
-                System.err.println("HttpClient: Unable to sign GET request for OAuth");
-            }
-        }
-        HttpRequest request = new HttpRequest(this, getHost(), get);
-        request.start();
-        return request;
+        return new GetRequest(this, path, params);
+    }
+
+    /**
+     * Performs a DELETE request to the specified path.
+     *
+     * @param path String: an absolute path to file or script on the server
+     * @return HttpRequest
+     */
+    public HttpRequest DELETE(String path) {
+        return DELETE(path, null);
+    }
+
+    /**
+     * Performs a DELETE request to the specified path with
+     * the specified parameters. The parameters are assembled into a query
+     * string and appended to the path.
+     *
+     * @param params HashMap: a collection of key/value pairs
+     */
+    public HttpRequest DELETE(String path, Map params) {
+        return new DeleteRequest(this, path, params);
+    }
+
+    /**
+     * Performs a POST request to the specified path.
+     *
+     * @param path String: an absolute path to a file or script on the server
+     * @return HttpRequest
+     */
+    public HttpRequest POST(String path) {
+        return POST(path, null, null);
     }
 
     /**
      * Performs a POST request, sending the specified parameters as data
      * in the same way a web browser submits a form.
      *
-     * @param path String: an absolute path to a file or script on the server
      * @param params HashMap: a collection of key/value parameters to send to the server
-     * @return HttpRequest
      */
     public HttpRequest POST(String path, Map params) {
         return POST(path, params, null);
@@ -265,60 +261,61 @@ public class RESTClient {
      * @param files HashMap: a collection of key/file pairs to send to the server
      */
     public HttpRequest POST(String path, Map params, Map files) {
-        //// clean up path a little bit- remove whitespace, add slash prefix
-        path = path.trim();
-        if (!path.startsWith("/")) {
-            path = "/" + path;
-        }
-        //// finally, invoke request
-        HttpPost post = new HttpPost(getHost().toURI() + path);
-        MultipartEntityBuilder builder = null;
-        //// if files passed, set up a multipart request
-        if (files != null) {
-            builder = MultipartEntityBuilder.create();
-            for (Object key: files.keySet()) {
-                Object value = files.get(key);
-                if (value instanceof byte[]) {
-                    builder.addPart((String)key, new ByteArrayBody((byte[])value, "bytes.dat"));
-                } else if (value instanceof String) {
-                    File file = new File((String) value);
-                    if (!file.exists()) {
-                        file = parent.sketchFile((String) value);
-                    }
-                    builder.addPart((String)key, new FileBody(file));
-                }
-            }
-        }
-        if (params != null) {
-            if (builder == null) {
-                ArrayList<BasicNameValuePair> pairs = new ArrayList<BasicNameValuePair>();
-                for (Object key: params.keySet()) {
-                    Object value = params.get(key);
-                    pairs.add(new BasicNameValuePair(key.toString(), value.toString()));
-                }
-                post.setEntity(new UrlEncodedFormEntity(pairs, Consts.UTF_8));
-            } else {
-                for (Object key: params.keySet()) {
-                    Object value = params.get(key);
-                    builder.addTextBody((String) key, (String) value);
-                }
-            }
-        }
-        if (builder != null) {
-          post.setEntity(builder.build());
-        }
-        if (useOAuth) {
-            OAuthConsumer consumer = new CommonsHttpOAuthConsumer(oauthConsumerKey, oauthConsumerSecret);
-            consumer.setTokenWithSecret(oauthAccessToken, oauthAccessTokenSecret);
-            try {
-                consumer.sign(post);
-            } catch (Exception e) {
-                System.err.println("HttpClient: Unable to sign POST request for OAuth");
-            }
-        }
-        HttpRequest request = new HttpRequest(this, getHost(), post);
-        request.start();
-        return request;
+        return new PostRequest(this, path, params, files);
+    }
+
+    /**
+     * Performs a PUT request to the specified path.
+     *
+     * @param path String: an absolute path to a file or script on the server
+     * @return HttpRequest
+     */
+    public HttpRequest PUT(String path) {
+        return PUT(path, null, null);
+    }
+
+    /**
+     * Performs a POST request, sending the specified parameters as data
+     * in the same way a web browser submits a form.
+     *
+     * @param params HashMap: a collection of key/value parameters to send to the server
+     */
+    public HttpRequest PUT(String path, Map params) {
+        return PUT(path, params, null);
+    }
+
+    /**
+     * @param files HashMap: a collection of key/file pairs to send to the server
+     */
+    public HttpRequest PUT(String path, Map params, Map files) {
+        return new PutRequest(this, path, params, files);
+    }
+
+    /**
+     * Performs a PATCH request to the specified path.
+     *
+     * @param path String: an absolute path to a file or script on the server
+     * @return HttpRequest
+     */
+    public HttpRequest PATCH(String path) {
+        return PATCH(path, null, null);
+    }
+
+    /**
+     * Performs a PATCH request, sending the specified parameters as data
+     * in the same way a web browser submits a form.
+     *
+     * @param params HashMap: a collection of key/value parameters to send to the server
+     */
+    public HttpRequest PATCH(String path, Map params) {
+        return PATCH(path, params, null);
+    }
+
+    /**
+     * @param files HashMap: a collection of key/file pairs to send to the server
+     */
+    public HttpRequest PATCH(String path, Map params, Map files) {
+        return new PatchRequest(this, path, params, files);
     }
 
     HttpHost getHost() {
