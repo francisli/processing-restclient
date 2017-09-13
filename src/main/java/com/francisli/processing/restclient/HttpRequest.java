@@ -41,7 +41,10 @@ public class HttpRequest extends Thread {
         this.request = request;
     }
 
-    public void pre(HttpResponse response) {      
+    public void background(HttpResponse response) {
+    }
+
+    public void pre(HttpResponse response) {
     }
 
     /**
@@ -55,7 +58,9 @@ public class HttpRequest extends Thread {
                 PApplet.println("RESTClient: " + request.getRequestLine().toString());
             }
             org.apache.http.HttpResponse httpResponse = client.httpClient.execute(host, request);
-            client.put(this, new HttpResponse(httpResponse));
+            HttpResponse response = new HttpResponse(httpResponse);
+            background(response);
+            client.put(this, response);
         } catch (Exception e) {
             System.err.println("RESTClient: An error occurred- ");
             e.printStackTrace();;
