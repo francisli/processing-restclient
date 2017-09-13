@@ -213,7 +213,9 @@ public class RESTClient {
      * @param params HashMap: a collection of key/value pairs
      */
     public HttpRequest GET(String path, Map params) {
-        return new GetRequest(this, path, params);
+        HttpRequest request = new GetRequest(this, path, params);
+        request.start();
+        return request;
     }
 
     /**
@@ -234,7 +236,9 @@ public class RESTClient {
      * @param params HashMap: a collection of key/value pairs
      */
     public HttpRequest DELETE(String path, Map params) {
-        return new DeleteRequest(this, path, params);
+        HttpRequest request = new DeleteRequest(this, path, params);
+        request.start();
+        return request;
     }
 
     /**
@@ -261,7 +265,9 @@ public class RESTClient {
      * @param files HashMap: a collection of key/file pairs to send to the server
      */
     public HttpRequest POST(String path, Map params, Map files) {
-        return new PostRequest(this, path, params, files);
+        HttpRequest request = new PostRequest(this, path, params, files);
+        request.start();
+        return request;
     }
 
     /**
@@ -288,7 +294,9 @@ public class RESTClient {
      * @param files HashMap: a collection of key/file pairs to send to the server
      */
     public HttpRequest PUT(String path, Map params, Map files) {
-        return new PutRequest(this, path, params, files);
+        HttpRequest request = new PutRequest(this, path, params, files);
+        request.start();
+        return request;
     }
 
     /**
@@ -315,7 +323,9 @@ public class RESTClient {
      * @param files HashMap: a collection of key/file pairs to send to the server
      */
     public HttpRequest PATCH(String path, Map params, Map files) {
-        return new PatchRequest(this, path, params, files);
+        HttpRequest request = new PatchRequest(this, path, params, files);
+        request.start();
+        return request;
     }
 
     HttpHost getHost() {

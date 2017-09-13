@@ -74,7 +74,6 @@ public class GetRequest extends HttpRequest {
               System.err.println("HttpClient: Unable to sign GET request for OAuth");
           }
       }
-      start();
     }
 
     org.apache.http.HttpRequest newRequest(String uri) {

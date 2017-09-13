@@ -105,7 +105,6 @@ public class PostRequest extends HttpRequest {
               System.err.println("HttpClient: Unable to sign POST request for OAuth");
           }
       }
-      start();
     }
 
     HttpEntityEnclosingRequestBase newRequest(String uri) {
